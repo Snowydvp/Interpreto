@@ -5,8 +5,7 @@ import bsh.Interpreter;
 import interpreto.Metier.Type.*;
 
 public class Test {
-	
-	
+
 	public static void main(String args[]) {
 		Booleen b = new Booleen("bool", false);
 		
@@ -19,9 +18,5 @@ public class Test {
 			e.printStackTrace();
 		}
 		new Controleur();
-		
-		
 	}
-	
-
 }
