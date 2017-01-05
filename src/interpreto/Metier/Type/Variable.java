@@ -18,6 +18,7 @@ public abstract class Variable {
 		this.nomVariable = nomVariable;
 		this.estConstante = estConstante;
 		this.estTableau = estTableau;
+		this.valeurs = new ArrayList<>();
 	}
 
 	public String getNomVariable() {
@@ -42,7 +43,7 @@ public abstract class Variable {
 	}
 
 	public boolean modifierValeur(Object val) {//a verifier si le type de la nouvelle valeur correspond
-		System.out.println(val.getClass().getName());
+		System.out.println(valeurs.get(0).getClass().getName());
 		if (!estConstante) {
 			valeurs.add(val);
 			return true;
