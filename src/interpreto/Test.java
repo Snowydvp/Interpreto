@@ -9,7 +9,7 @@ public class Test {
 		Booleen b = new Booleen("bool", false);
 		b.modifierValeur("okok");
 		b.modifierValeur(new Boolean(true));
-		
+		new Controleur();
 	}
 	
 
