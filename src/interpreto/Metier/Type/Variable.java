@@ -42,8 +42,9 @@ public abstract class Variable {
 	}
 
 	public boolean modifierValeur(Object val) {//a verifier si le type de la nouvelle valeur correspond
+		System.out.println(val.getClass().getName());
 		if (!estConstante) {
-			valeurs.set(valeurs.size(), val);
+			valeurs.add(val);
 			return true;
 		}
 		return false;
