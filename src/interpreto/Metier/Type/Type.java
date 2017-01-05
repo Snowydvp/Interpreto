@@ -1,5 +1,5 @@
 package interpreto.Metier.Type;
 
-public interface Type {
+public abstract class Type {
 
 }
