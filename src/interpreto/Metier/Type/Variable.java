@@ -1,7 +1,10 @@
 package interpreto.Metier.Type;
+
 import java.util.ArrayList;
+
 /**
- * Classe mère recouvrant tout typesde variables
+ * Classe mère recouvrant tout types de variables
+ * 
  * @author Equipe 7
  *
  */
@@ -32,11 +35,18 @@ public abstract class Variable {
 	public boolean isEstConstante() {
 		return estConstante;
 	}
-	
-	public void retourArriere()
-	{
-		if(!valeurs.isEmpty() && !estConstante)
-			valeurs.remove(valeurs.size()-1);
+
+	public void retourArriere() {
+		if (!valeurs.isEmpty() && !estConstante)
+			valeurs.remove(valeurs.size() - 1);
+	}
+
+	public boolean modifierValeur(Object val) {//a verifier si le type de la nouvelle valeur correspond
+		if (!estConstante) {
+			valeurs.set(valeurs.size(), val);
+			return true;
+		}
+		return false;
 	}
 
 }
