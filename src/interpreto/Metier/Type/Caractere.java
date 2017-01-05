@@ -4,7 +4,7 @@ public class Caractere extends Variable {
 
 	public Caractere(String nomVariable, boolean estTableau) {
 		super(nomVariable, estTableau);
-		// TODO Auto-generated constructor stub
+		type = Character.class;
 	}
 
 }
