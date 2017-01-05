@@ -1,7 +1,10 @@
 package interpreto.Metier.Type;
-
 import java.util.ArrayList;
-
+/**
+ * Classe mère recouvrant tout typesde variables
+ * @author Equipe 7
+ *
+ */
 public abstract class Variable {
 
 	protected String nomVariable;
