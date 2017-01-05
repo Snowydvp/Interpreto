@@ -1,5 +1,6 @@
 package interpreto;
 
+
 import interpreto.IHM.*;
 import interpreto.Metier.*;
 import interpreto.Metier.Type.*;
