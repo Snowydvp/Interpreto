@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class LectureFichier {
 
-	public ArrayList<String> lireFichier(String fichier) {
+	public static ArrayList<String> lireFichier(String fichier) {
 		Scanner sc;
 		ArrayList<String> lignes = new ArrayList<>();
 		try {
