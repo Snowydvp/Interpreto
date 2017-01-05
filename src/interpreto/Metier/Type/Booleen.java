@@ -1,12 +1,10 @@
 package interpreto.Metier.Type;
 
-import java.util.ArrayList;
 
 public class Booleen extends Variable {
 
-	public Booleen(String nomVariable, boolean estConstante, boolean estTableau) {
-		super(nomVariable, estTableau);
-		valeurs = new ArrayList<Boolean>();
+	public Booleen(String nomVariable, boolean estTableau) {
+		super(nomVariable);
 		type = Boolean.class;
 		
 	}

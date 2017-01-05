@@ -6,7 +6,7 @@ public class Test {
 	
 	
 	public static void main(String args[]) {
-		Booleen b = new Booleen("bool", false, false);
+		Booleen b = new Booleen("bool", false);
 		b.modifierValeur("okok");
 		b.modifierValeur(new Boolean(true));
 		
