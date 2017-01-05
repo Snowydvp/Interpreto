@@ -28,6 +28,7 @@ public abstract class Variable {
 	public ArrayList getValeurs() {
 		return valeurs;
 	}
+	
 
 	public boolean isEstTableau() {
 		return estTableau;
@@ -43,7 +44,8 @@ public abstract class Variable {
 	}
 
 	public boolean modifierValeur(Object val) {//a verifier si le type de la nouvelle valeur correspond
-		System.out.println(valeurs.get(0).getClass().getName());
+		if(valeurs.size() > 0)
+			System.out.println(valeurs.get(0).getClass().getName());
 		if (!estConstante) {
 			valeurs.add(val);
 			return true;
