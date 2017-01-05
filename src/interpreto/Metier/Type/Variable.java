@@ -13,12 +13,12 @@ public abstract class Variable {
 	protected String nomVariable;
 	protected ArrayList valeurs;
 	protected boolean estTableau, estConstante;
+	protected Class<?> type;
 
-	public Variable(String nomVariable, boolean estConstante, boolean estTableau) {
+	public Variable(String nomVariable, boolean estTableau) {
 		this.nomVariable = nomVariable;
 		this.estConstante = estConstante;
 		this.estTableau = estTableau;
-		this.valeurs = new ArrayList<>();
 	}
 
 	public String getNomVariable() {
@@ -44,9 +44,7 @@ public abstract class Variable {
 	}
 
 	public boolean modifierValeur(Object val) {//a verifier si le type de la nouvelle valeur correspond
-		if(valeurs.size() > 0)
-			System.out.println(valeurs.get(0).getClass().getName());
-		if (!estConstante) {
+		if (!estConstante && val.getClass() == type.getClass()) {
 			valeurs.add(val);
 			return true;
 		}
