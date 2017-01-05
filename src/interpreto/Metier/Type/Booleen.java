@@ -1,5 +1,5 @@
 package interpreto.Metier.Type;
 
-public abstract class Type {
+public class Booleen {
 
 }
