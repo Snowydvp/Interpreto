@@ -6,7 +6,6 @@ x,y:entier
 DEBUT
 x ◄— 5
 y ◄— 3
-ecrire ( x )
-ecrire ( "lire" )
-ecrire ( y )
+ecrire ( x )	ecrire ( "lire" )
+ ecrire ( y )
 FIN

@@ -10,7 +10,7 @@ public class AnalyseCode {
 
 	public AnalyseCode(String fichier) {
 		codeBrut = new LectureFichier(fichier).getCode();
-		codeAnalyse = getMotsColors(codeBrut);
+		codeAnalyse = getMotsColors(getMots());
 	}
 
 	/**
@@ -28,7 +28,8 @@ public class AnalyseCode {
 				motsColor.add("\u001B[1;36m" + mot + "\u001B[0m");
 			// traiter(ligneBrut.substring(ligneBrut.indexOf(motBrut),
 			// ligneBrut.lastIndexOf(')') + 1));
-			motsColor.add(mot);
+			else
+				motsColor.add(mot);
 		}
 		return motsColor;
 	}
@@ -41,6 +42,7 @@ public class AnalyseCode {
 			scLigne.useDelimiter("[ \t]");
 			while (scLigne.hasNext())
 				mots.add(scLigne.next().trim());
+			scLigne.close();
 		}
 		return mots;
 	}
@@ -54,7 +56,6 @@ public class AnalyseCode {
 	 */
 	private boolean estMotCle(String mot) {
 		// A modifier (utiliser enumerations, ...)
-		mot = mot.trim();
 		if (mot.equalsIgnoreCase("ecrire") || mot.equalsIgnoreCase("lire"))
 			return true;
 		return false;
@@ -65,9 +66,6 @@ public class AnalyseCode {
 	 * 
 	 * @return texte du code analysé
 	 */
-	public ArrayList<String> getCodeAnalyse() {
-		return codeAnalyse;
-	}
 
 	public ArrayList<String> getCodeBrut() {
 		return this.codeBrut;
@@ -84,13 +82,36 @@ public class AnalyseCode {
 	public ArrayList<String> getCodeAffichage() {
 		ArrayList<String> texteAffichage = new ArrayList<>();
 		int indiceCodeAnalyse = 0;
-		for (String texteBrut : codeBrut) {
-			if (texteBrut.equals(" ") || texteBrut.equals("\t"))
-				texteAffichage.add(texteBrut);
-			else
-				texteAffichage.add(codeAnalyse.get(indiceCodeAnalyse++));
+		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
+			String ligneBrut = codeBrut.get(cptLig);
+			String ligneAffichage = "";
+			int indChar = 0;
+			for (char c : ligneBrut.toCharArray()) {
+				if (c == ' ' || c == '\t')
+					ligneAffichage += 't'; // a modifier en = c
+				else {
+					// on ajoute tout ce qui est un mot
+					if (indiceCodeAnalyse < 30) {
+						String mot = codeAnalyse.get(indiceCodeAnalyse++);
+						ligneAffichage +=" " + mot;
+						// on avance le caractère puisqu'on rajoute un mot
+						// entier
+						if (indChar + mot.length() < ligneBrut.length())
+							c = ligneBrut.charAt(indChar + mot.length());
+					}
+				}
+				c++;
+			}
+			// ajoute chaque ligne pour l'affichage
+			texteAffichage.add(ligneAffichage);
 		}
 		return texteAffichage;
 	}
 
+	// test de cette classe
+	public static void main(String arg[]) {
+		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
+		for (String lignes : an.getCodeAffichage())
+			System.out.println(lignes);
+	}
 }
