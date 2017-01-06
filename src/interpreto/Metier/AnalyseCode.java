@@ -10,41 +10,39 @@ public class AnalyseCode {
 
 	public AnalyseCode(String fichier) {
 		codeBrut = new LectureFichier(fichier).getCode();
-		codeAnalyse = new ArrayList<>(codeBrut);
-		//colorierPrimitives();
+		codeAnalyse = getMotsColors(codeBrut);
 	}
 
-	private ArrayList<String> colorierPrimitives(ArrayList<String> mots) {
+	/**
+	 * Parcours tout les mots existant dans le code, et colorie les mots-clés
+	 * 
+	 * @param mots
+	 *            liste des mots
+	 * @return nouvelle liste des mots coloriés
+	 */
+	private ArrayList<String> getMotsColors(ArrayList<String> mots) {
 		ArrayList<String> motsColor = new ArrayList<>();
 		for (String mot : mots) {
-			if (estMotCle(mot)) {
+			if (estMotCle(mot))
 				// coloriage de la primitive en bleu
-				mot = "\u001B[1;36m" + mot + "\u001B[0m";
-				traiter(ligneBrut.substring(ligneBrut.indexOf(motBrut), ligneBrut.lastIndexOf(')') + 1));
-			} else
-				motAnalyse += motBrut;
-			ligneAnalyse += motAnalyse + ' ';
+				motsColor.add("\u001B[1;36m" + mot + "\u001B[0m");
+			// traiter(ligneBrut.substring(ligneBrut.indexOf(motBrut),
+			// ligneBrut.lastIndexOf(')') + 1));
+			motsColor.add(mot);
 		}
+		return motsColor;
 	}
 
 	private ArrayList<String> getMots() {
+		ArrayList<String> mots = new ArrayList<>();
 		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			String ligneAnalyse = "";
-			String ligneBrut = codeBrut.get(cptLig);
-			// recherher un moyen de decouper en gardant les espaces
-
-			Scanner scLigne = new Scanner(ligneBrut);
+			// Correspond a chaque ligne
+			Scanner scLigne = new Scanner(codeBrut.get(cptLig));
 			scLigne.useDelimiter("[ \t]");
-			while (scLigne.hasNext()) {
-				String motBrut = scLigne.next();
-				String motAnalyse = "";
-
-				
-
-			}
-
-			codeAnalyse.set(cptLig, ligneAnalyse);
+			while (scLigne.hasNext())
+				mots.add(scLigne.next().trim());
 		}
+		return mots;
 	}
 
 	/**
@@ -77,6 +75,22 @@ public class AnalyseCode {
 
 	public void traiter(String motCle) {
 		System.out.println(motCle);
+	}
+
+	/**
+	 * Reconstitue entièrement le texte destiné à l'affichage. Ce texte comporte
+	 * donc les primitives colories,...
+	 */
+	public ArrayList<String> getCodeAffichage() {
+		ArrayList<String> texteAffichage = new ArrayList<>();
+		int indiceCodeAnalyse = 0;
+		for (String texteBrut : codeBrut) {
+			if (texteBrut.equals(" ") || texteBrut.equals("\t"))
+				texteAffichage.add(texteBrut);
+			else
+				texteAffichage.add(codeAnalyse.get(indiceCodeAnalyse++));
+		}
+		return texteAffichage;
 	}
 
 }
