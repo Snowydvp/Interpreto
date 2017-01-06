@@ -1,8 +1,12 @@
 ALGORITHME   NomAlgo
 constante:
+A ◄— 7
 variable:
 x,y:entier
 DEBUT
-	ecrire	lire
-	
+x ◄— 5
+y ◄— 3
+ecrire ( x )
+ecrire ( "lire" )
+ecrire ( y )
 FIN

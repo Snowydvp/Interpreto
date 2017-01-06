@@ -17,15 +17,14 @@ public class AnalyseCode {
 	private void colorierPrimitives() {
 		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
 			String ligneAnalyse = "";
+			String ligneBrut = codeBrut.get(cptLig);
 			// recherher un moyen de decouper en gardant les espaces
 
-			String[] ligneBrut = codeBrut.get(cptLig).split("[ \t]");
-			for (int cptMot = 0; cptMot < ligneBrut.length; cptMot++) {
-				String motBrut = ligneBrut[cptMot];
+			Scanner scLigne = new Scanner(ligneBrut);
+			scLigne.useDelimiter("[ \t]");
+			while (scLigne.hasNext()) {
+				String motBrut = scLigne.next();
 				String motAnalyse = "";
-				if (codeBrut.indexOf(ligneBrut[cptMot]) < 0)
-					motAnalyse += codeBrut.get(cptLig).charAt( codeBrut.get(cptLig).indexOf(ligneBrut[cptMot] ) - 1);
-
 				if (estMotCle(motBrut))
 					// coloriage de la primitive en bleu
 					motAnalyse += "\u001B[1;36m" + motBrut + "\u001B[0m";
@@ -34,8 +33,10 @@ public class AnalyseCode {
 				ligneAnalyse += motAnalyse + ' ';
 
 			}
+
 			codeAnalyse.set(cptLig, ligneAnalyse);
 		}
+
 	}
 
 	/**
@@ -48,7 +49,6 @@ public class AnalyseCode {
 	private boolean estMotCle(String mot) {
 		// A modifier (utiliser enumerations, ...)
 		mot = mot.trim();
-		System.out.println(mot);
 		if (mot.equalsIgnoreCase("ecrire") || mot.equalsIgnoreCase("lire"))
 			return true;
 		return false;
@@ -61,6 +61,11 @@ public class AnalyseCode {
 	 */
 	public ArrayList<String> getCodeAnalyse() {
 		return codeAnalyse;
+	}
+	
+	public ArrayList<String> getCodeBrut()
+	{
+		return this.codeBrut;
 	}
 
 }
