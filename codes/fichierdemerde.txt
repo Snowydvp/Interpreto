@@ -1,0 +1,8 @@
+ALGORITHME   NomAlgo
+constante:
+variable:
+x,y:entier
+DEBUT
+	ecrire	lire
+	
+FIN

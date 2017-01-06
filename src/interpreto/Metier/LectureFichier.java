@@ -6,18 +6,37 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LectureFichier {
+	
+	private ArrayList<String> code;
+	File fichier;
+	
+	//A l'appel du constructeur, le fichier est lu et enregistr�
+	public LectureFichier(String nomFichier)
+	{
+		code = new ArrayList<>();
+		this.fichier = new File(nomFichier);
+		code = lireFichier();
+	}
 
-	public static ArrayList<String> lireFichier(String fichier) {
+	public ArrayList<String> lireFichier() {
 		Scanner sc;
 		ArrayList<String> lignes = new ArrayList<>();
 		try {
-			sc = new Scanner(new File(fichier));
+			sc = new Scanner(fichier);
 			while (sc.hasNextLine())
 				lignes.add(sc.nextLine());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return lignes;
+	}
+	/**
+	 * 
+	 * @return Texte du code
+	 */
+	public ArrayList<String> getCode()
+	{
+		return this.code;
 	}
 
 }
