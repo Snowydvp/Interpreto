@@ -1,5 +1,7 @@
 package interpreto.Metier;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,44 +9,36 @@ public class AnalyseCode {
 
 	ArrayList<String> codeBrut;
 	ArrayList<String> codeAnalyse;
+	ArrayList<String> motCles;
 
 	public AnalyseCode(String fichier) {
 		codeBrut = new LectureFichier(fichier).getCode();
-		codeAnalyse = getMotsColors(getMots());
+		motCles = getMotsCles();
+		codeAnalyse = getMotsCouleur();
+
 	}
 
 	/**
 	 * Parcours tout les mots existant dans le code, et colorie les mots-clés
 	 * 
-	 * @param mots
-	 *            liste des mots
 	 * @return nouvelle liste des mots coloriés
 	 */
-	private ArrayList<String> getMotsColors(ArrayList<String> mots) {
-		ArrayList<String> motsColor = new ArrayList<>();
-		for (String mot : mots) {
-			if (estMotCle(mot))
-				// coloriage de la primitive en bleu
-				motsColor.add("\u001B[1;36m" + mot + "\u001B[0m");
-			// traiter(ligneBrut.substring(ligneBrut.indexOf(motBrut),
-			// ligneBrut.lastIndexOf(')') + 1));
-			else
-				motsColor.add(mot);
-		}
-		return motsColor;
-	}
-
-	private ArrayList<String> getMots() {
-		ArrayList<String> mots = new ArrayList<>();
+	private ArrayList<String> getMotsCouleur() {
+		ArrayList<String> codeCouleur = new ArrayList<>();
 		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			// Correspond a chaque ligne
-			Scanner scLigne = new Scanner(codeBrut.get(cptLig));
-			scLigne.useDelimiter("[ \t]");
-			while (scLigne.hasNext())
-				mots.add(scLigne.next().trim());
-			scLigne.close();
+			for (String motcle : this.motCles) {
+				if (codeCouleur.size() <= cptLig)
+					//on colorie pour la premiere fois la ligne
+					codeCouleur.add(cptLig,
+							codeBrut.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
+				else
+					//on reprend la ligne deja colorie
+					codeCouleur.set(cptLig,
+							codeCouleur.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
+
+			}
 		}
-		return mots;
+		return codeCouleur;
 	}
 
 	/**
@@ -62,6 +56,28 @@ public class AnalyseCode {
 	}
 
 	/**
+	 * Construit la liste de tout les mots clés a partir du fichier texte
+	 * 
+	 * @return
+	 */
+	private ArrayList<String> getMotsCles() {
+		ArrayList<String> motsCles = new ArrayList<>();
+		Scanner scFichier = null;
+		try {
+			scFichier = new Scanner(new File("src/interpreto/Metier/Mots-clés.txt"));
+			while (scFichier.hasNextLine())
+				motsCles.add(scFichier.nextLine());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			scFichier.close();
+		}
+
+		return motsCles;
+	}
+
+	/**
 	 * Cette méthode retourne le code déjà analysé et modifié pour l'affichage
 	 * 
 	 * @return texte du code analysé
@@ -75,43 +91,10 @@ public class AnalyseCode {
 		System.out.println(motCle);
 	}
 
-	/**
-	 * Reconstitue entièrement le texte destiné à l'affichage. Ce texte comporte
-	 * donc les primitives colories,...
-	 */
-	public ArrayList<String> getCodeAffichage() {
-		ArrayList<String> texteAffichage = new ArrayList<>();
-		int indiceCodeAnalyse = 0;
-		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			String ligneBrut = codeBrut.get(cptLig);
-			String ligneAffichage = "";
-			int indChar = 0;
-			for (char c : ligneBrut.toCharArray()) {
-				if (c == ' ' || c == '\t')
-					ligneAffichage += 't'; // a modifier en = c
-				else {
-					// on ajoute tout ce qui est un mot
-					if (indiceCodeAnalyse < 30) {
-						String mot = codeAnalyse.get(indiceCodeAnalyse++);
-						ligneAffichage +=" " + mot;
-						// on avance le caractère puisqu'on rajoute un mot
-						// entier
-						if (indChar + mot.length() < ligneBrut.length())
-							c = ligneBrut.charAt(indChar + mot.length());
-					}
-				}
-				c++;
-			}
-			// ajoute chaque ligne pour l'affichage
-			texteAffichage.add(ligneAffichage);
-		}
-		return texteAffichage;
-	}
-
 	// test de cette classe
 	public static void main(String arg[]) {
 		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
-		for (String lignes : an.getCodeAffichage())
+		for (String lignes : an.codeAnalyse)
 			System.out.println(lignes);
 	}
 }
