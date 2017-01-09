@@ -5,14 +5,10 @@ variable
 	x, y	: entier
 
 DEBUT
-<<<<<<< HEAD
 x ◄— 5
 y ◄— 3
 	ecrire(x)	lire(x)
-=======
-	x ◄— 5
-	y ◄— 7
-
+		
 	ecrire ( "etape 0")
 
 	si x = 5 alors

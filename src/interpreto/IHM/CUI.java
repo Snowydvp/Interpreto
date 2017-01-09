@@ -118,6 +118,5 @@ public class CUI {
 	public static void main(String a[])
 	{
 		CUI cui = new CUI();
-		cui.affichage("cdes/fichierdemerde.txt");
 	}
 }
