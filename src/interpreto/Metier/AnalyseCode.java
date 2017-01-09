@@ -9,13 +9,14 @@ public class AnalyseCode {
 
 	ArrayList<String> codeBrut;
 	ArrayList<String> codeAnalyse;
-	ArrayList<String> motCles;
+	ArrayList<String> fonctions;
 
 	public AnalyseCode(String fichier) {
 		codeBrut = new LectureFichier(fichier).getCode();
-		motCles = getMotsCles();
+		fonctions = getMotsFonction();
 		codeAnalyse = getMotsCouleur();
-
+		for(String ligne : codeBrut)
+			traiterCode(ligne);
 	}
 
 	/**
@@ -26,13 +27,14 @@ public class AnalyseCode {
 	private ArrayList<String> getMotsCouleur() {
 		ArrayList<String> codeCouleur = new ArrayList<>();
 		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			for (String motcle : this.motCles) {
+			for (String motcle : this.fonctions) {
 				if (codeCouleur.size() <= cptLig)
-					//on colorie pour la premiere fois la ligne
+					// on colorie pour la premiere fois la ligne
 					codeCouleur.add(cptLig,
 							codeBrut.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
 				else
-					//on reprend la ligne deja colorie
+					// on reprend la ligne deja coloriée afin de colorier les
+					// autres mots-clés
 					codeCouleur.set(cptLig,
 							codeCouleur.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
 
@@ -42,29 +44,15 @@ public class AnalyseCode {
 	}
 
 	/**
-	 * Un mot clé est un mot reconnu nativement par le pseudo-code (primitives,
-	 * fonctions, conditions)
-	 * 
-	 * @param mot
-	 * @return
-	 */
-	private boolean estMotCle(String mot) {
-		// A modifier (utiliser enumerations, ...)
-		if (mot.equalsIgnoreCase("ecrire") || mot.equalsIgnoreCase("lire"))
-			return true;
-		return false;
-	}
-
-	/**
-	 * Construit la liste de tout les mots clés a partir du fichier texte
+	 * Construit la liste de toutes les fonctions a partir du fichier texte
 	 * 
 	 * @return
 	 */
-	private ArrayList<String> getMotsCles() {
+	private ArrayList<String> getMotsFonction() {
 		ArrayList<String> motsCles = new ArrayList<>();
 		Scanner scFichier = null;
 		try {
-			scFichier = new Scanner(new File("src/interpreto/Metier/Mots-clés.txt"));
+			scFichier = new Scanner(new File("src/interpreto/Metier/fonctions.txt"));
 			while (scFichier.hasNextLine())
 				motsCles.add(scFichier.nextLine());
 		} catch (FileNotFoundException e) {
@@ -86,9 +74,30 @@ public class AnalyseCode {
 	public ArrayList<String> getCodeBrut() {
 		return this.codeBrut;
 	}
+	
+	public boolean estFonction(String expression)
+	{
+		for(String fonction : fonctions)
+			if(expression.contains(fonction))
+				return true;
+		return false;
+	}
 
-	public void traiter(String motCle) {
-		System.out.println(motCle);
+	/**
+	 * Cette méthode recursive interprète le code
+	 * @param motCle
+	 */
+	public void traiterCode(String ligne) {
+		Scanner sc = new Scanner(ligne);
+		while(sc.hasNext())
+		{
+			String expression = sc.next();
+			if(estFonction(expression))
+			{
+				System.out.println("fonction : "+expression);
+			}
+		}
+		sc.close();
 	}
 
 	// test de cette classe
