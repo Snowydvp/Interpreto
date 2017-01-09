@@ -110,7 +110,8 @@ public class AnalyseCode {
 				String declaration = code.get(++i);
 
 				while (!declaration.equals("DEBUT")) {
-					declarerVariable(declaration);
+					if(declaration.contains(":"))
+						declarerVariable(declaration);
 					declaration = code.get(++i);
 				}
 			}
