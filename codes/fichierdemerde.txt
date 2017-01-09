@@ -42,5 +42,4 @@ y ◄— 3
 
 	ecrire ( "etape 8" )
 
->>>>>>> branch 'master' of https://github.com/Snowydvp/Interpreto.git
 FIN
