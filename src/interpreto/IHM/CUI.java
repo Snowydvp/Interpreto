@@ -54,15 +54,16 @@ public class CUI {
 		   ------------------------------------------------ */
 		sRet += "\n";
 		int tailleNbLignes = (code.size() / 10);
-		System.out.println(tailleNbLignes);
 		for (int cptLig = 0; cptLig < code.size(); cptLig++) {
 			String line = code.get(cptLig).replaceAll("\t", "    "); // Remplacement des tabulations par des espaces
+			int nbCouleur = line.split("\u001B").length; //Definis le nombre de couleurs existant dans la ligne
+			
 			sRet += '|'
 				 + String.format("%" + tailleNbLignes + "d", cptLig)
 				 + ' ' 
 				 + line
 				 //Detecter le nombre de couleur par ligne pour rajouter de la longueur
-				 + String.format("%" + (81 - line.length()) + "s", "| ");
+				 + String.format("%" + (81 - line.length() + (nbCouleur * 5.5) - 4) + "s", "| ");
 			if(cptLig == 0)
 				sRet += "|    NOM     |   TYPE     |   VALEUR               |\n";
 			else{

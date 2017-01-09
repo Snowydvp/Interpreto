@@ -1,0 +1,12 @@
+sinon
+fsi
+alors
+selon
+cas
+autrecas
+fselon
+tq
+faire
+ftq
+si
+non

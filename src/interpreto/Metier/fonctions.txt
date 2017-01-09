@@ -1,2 +1,17 @@
 lire
 ecrire
+enChaine
+car
+enRéel
+enEntier
+ord
+plancher
+plafond
+arrondi
+aujourd'hui
+jour
+mois
+annee
+estRéel
+estEntier
+hasard

@@ -2,21 +2,28 @@ package interpreto.Metier;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import bsh.EvalError;
+import bsh.Interpreter;
+
 public class AnalyseCode {
 
-	ArrayList<String> codeBrut;
-	ArrayList<String> codeAnalyse;
-	ArrayList<String> fonctions;
+	ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs;
+	Interpreter interpreteur;
 
 	public AnalyseCode(String fichier) {
+		interpreteur = new Interpreter();
 		codeBrut = new LectureFichier(fichier).getCode();
-		fonctions = getMotsFonction();
+		fonctions = construireListeMots("src/interpreto/Metier/fonctions.txt");
+		conditions = construireListeMots("src/interpreto/Metier/conditions.txt");
+		motsClefs = new ArrayList<>(fonctions);
+		motsClefs.addAll(conditions);
 		codeAnalyse = getMotsCouleur();
-		for(String ligne : codeBrut)
-			traiterCode(ligne);
+
+		traiterCode(codeBrut);
 	}
 
 	/**
@@ -27,16 +34,16 @@ public class AnalyseCode {
 	private ArrayList<String> getMotsCouleur() {
 		ArrayList<String> codeCouleur = new ArrayList<>();
 		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			for (String motcle : this.fonctions) {
+			for (String motcle : this.motsClefs) {
 				if (codeCouleur.size() <= cptLig)
 					// on colorie pour la premiere fois la ligne
 					codeCouleur.add(cptLig,
-							codeBrut.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
+							codeBrut.get(cptLig).replaceAll(motcle + "", "\u001B[1;36m" + motcle + "\u001B[0m"));
 				else
 					// on reprend la ligne deja coloriée afin de colorier les
 					// autres mots-clés
 					codeCouleur.set(cptLig,
-							codeCouleur.get(cptLig).replaceAll(motcle, "\u001B[1;36m" + motcle + "\u001B[0m"));
+							codeCouleur.get(cptLig).replaceAll(motcle + "", "\u001B[1;36m" + motcle + "\u001B[0m"));
 
 			}
 		}
@@ -48,11 +55,11 @@ public class AnalyseCode {
 	 * 
 	 * @return
 	 */
-	private ArrayList<String> getMotsFonction() {
+	private ArrayList<String> construireListeMots(String nomFichier) {
 		ArrayList<String> motsCles = new ArrayList<>();
 		Scanner scFichier = null;
 		try {
-			scFichier = new Scanner(new File("src/interpreto/Metier/fonctions.txt"));
+			scFichier = new Scanner(new File(nomFichier));
 			while (scFichier.hasNextLine())
 				motsCles.add(scFichier.nextLine());
 		} catch (FileNotFoundException e) {
@@ -74,41 +81,78 @@ public class AnalyseCode {
 	public ArrayList<String> getCodeBrut() {
 		return this.codeBrut;
 	}
-	
-	public ArrayList<String> getCodeAnalyse()
-	{
+
+	public ArrayList<String> getCodeAnalyse() {
 		return this.codeAnalyse;
 	}
-	
-	public boolean estFonction(String expression)
-	{
-		for(String fonction : fonctions)
-			if(expression.contains(fonction))
+
+	public boolean estFonction(String expression) {
+		for (String fonction : fonctions)
+			if (expression.contains(fonction))
 				return true;
 		return false;
 	}
 
 	/**
 	 * Cette méthode recursive interprète le code
+	 * 
 	 * @param motCle
 	 */
-	public void traiterCode(String ligne) {
-		Scanner sc = new Scanner(ligne);
-		while(sc.hasNext())
+	public void traiterCode(ArrayList<String> code) {
+		for(int i=0; i<code.size(); i++)
 		{
-			String expression = sc.next();
-			if(estFonction(expression))
-			{
-				System.out.println("fonction : "+expression);
+			String ligne = code.get(i);
+			Scanner scLigne = new Scanner(ligne);
+			if (ligne.contains("variable:")) {
+				// Un programme ne possédant pas de variable, n'aura pas la
+				// ligne variable:
+
+				String declaration = code.get(++i);
+
+				while (!declaration.equals("DEBUT")) {
+					declarerVariable(declaration);
+					declaration = code.get(++i);
+				}
 			}
+
+			while (scLigne.hasNext()) {
+				String expression = scLigne.next();
+				/*
+				 * ----- Déclaration des variables -----
+				 */
+
+				if (estFonction(expression)) {
+					// System.out.println("fonction : " + expression);
+				} else if (expression.equals("◄—"))
+					instancierVariable(ligne);
+
+			}
+			scLigne.close();
 		}
-		sc.close();
+	}
+
+	public void instancierVariable(String ligne) {
+		String nomVariable = ligne.substring(0, ligne.indexOf("◄—"));
+		String valeur = ligne.substring(ligne.indexOf("◄—") + 2);
+		try {
+			//verififier si ele existe ??
+			interpreteur.eval(nomVariable + "=" + valeur);
+		} catch (EvalError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void declarerVariable(String ligne) {
+		// Dans le cas ou une seul affectation par ligne est autorisé
+		String nomsVariable = ligne.substring(0,ligne.indexOf(':'));
+		String type = ligne.substring(ligne.indexOf(':')+1);
+		//instancier et enregistrer la variable
 	}
 
 	// test de cette classe
 	public static void main(String arg[]) {
 		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
-		for (String lignes : an.codeAnalyse)
-			System.out.println(lignes);
+
 	}
 }

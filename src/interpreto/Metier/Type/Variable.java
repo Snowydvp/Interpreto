@@ -3,7 +3,7 @@ package interpreto.Metier.Type;
 import java.util.ArrayList;
 
 /**
- * Classe mère recouvrant tout les types de variables
+ * Classe mï¿½re recouvrant tout les types de variables
  * 
  * @author Equipe 7
  *
@@ -13,7 +13,7 @@ public abstract class Variable {
 	protected String nomVariable;
 	protected ArrayList valeurs;
 	protected boolean estTableau, estConstante;
-	/**Cette variable est utilisé uniquement lorsque la variable est un tableau**/
+	/**Cette variable est utilisï¿½ uniquement lorsque la variable est un tableau**/
 	protected int taille;
 	protected Class<?> type;
 

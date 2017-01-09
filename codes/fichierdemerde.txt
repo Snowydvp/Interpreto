@@ -1,7 +1,7 @@
 ALGORITHME NomAlgo
 constante:
 
-variable
+variable:
 	x, y	: entier
 
 DEBUT
