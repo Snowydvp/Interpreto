@@ -75,6 +75,11 @@ public class AnalyseCode {
 		return this.codeBrut;
 	}
 	
+	public ArrayList<String> getCodeAnalyse()
+	{
+		return this.codeAnalyse;
+	}
+	
 	public boolean estFonction(String expression)
 	{
 		for(String fonction : fonctions)

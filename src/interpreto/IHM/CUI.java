@@ -18,7 +18,7 @@ public class CUI {
 		   -------------------------- */
 		boolean endData = false; // Variables permettant de stocker si toutes les données ont été affichées
 		String sRet = "";
-		ArrayList<String> code = analyseCode.getCodeAffichage();
+		ArrayList<String> code = analyseCode.getCodeAnalyse();
 		ArrayList<String> resultConsole = new ArrayList<String>();
 		resultConsole.add("etape1 blablabla");
 		resultConsole.add("etape2");
@@ -113,5 +113,11 @@ public class CUI {
 		   --------------------------------------- */
 		
 		System.out.println(sRet);
+	}
+	
+	public static void main(String a[])
+	{
+		CUI cui = new CUI();
+		System.out.println(cui.affichage("codes/fichierdemerde.txt"););
 	}
 }
