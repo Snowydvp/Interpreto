@@ -53,13 +53,15 @@ public class CUI {
 		   ------- Affichage du Code et des Données -------
 		   ------------------------------------------------ */
 		sRet += "\n";
-		int tailleNbLignes = 1 + code.size() / 10;
-		for (int cptLig = 0; cptLig < code.size(); cptLig++) { // Peut afficher jusqu'à 999 lignes.
+		int tailleNbLignes = (code.size() / 10);
+		System.out.println(tailleNbLignes);
+		for (int cptLig = 0; cptLig < code.size(); cptLig++) {
 			String line = code.get(cptLig).replaceAll("\t", "    "); // Remplacement des tabulations par des espaces
 			sRet += '|'
 				 + String.format("%" + tailleNbLignes + "d", cptLig)
 				 + ' ' 
 				 + line
+				 //Detecter le nombre de couleur par ligne pour rajouter de la longueur
 				 + String.format("%" + (81 - line.length()) + "s", "| ");
 			if(cptLig == 0)
 				sRet += "|    NOM     |   TYPE     |   VALEUR               |\n";
