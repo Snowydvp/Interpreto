@@ -6,13 +6,17 @@ import interpreto.Metier.*;
 public class CUI {
 	
 	private AnalyseCode analyseCode;
+	private String nomFichier;
 	
-	public CUI() {
-		analyseCode = new AnalyseCode("codes/fichierdemerde.txt");
-		affichage("codes/fichierdemerde.txt");
+	public CUI(String nomFichier) {
+		this.nomFichier = nomFichier;
+		analyseCode = new AnalyseCode(nomFichier);
+		analyseCode.traiterCode();
+		affichage();
+		
 	}
 
-	public void affichage(String nomFichier) {
+	public void affichage() {
 		/* --------------------------
 		   ----- Initialisation -----
 		   -------------------------- */
@@ -20,9 +24,6 @@ public class CUI {
 		String sRet = "";
 		ArrayList<String> code = analyseCode.getCodeAnalyse();
 		ArrayList<String> resultConsole = new ArrayList<String>();
-		resultConsole.add("etape1 blablabla");
-		resultConsole.add("etape2");
-		resultConsole.add("etape3");
 		/* --------------------------
 		   --- Fin Initialisation ---
 		   -------------------------- */
@@ -71,7 +72,7 @@ public class CUI {
 							         + "| " 
 							         + String.format("%-11s", analyseCode.getVariables().get(i).getType()) 
 							         + "| " 
-							         + String.format("%-23s", analyseCode.getValeurVariable(analyseCode.getVariables().get(i)))
+							         + String.format("%-23s", analyseCode.getVariables().get(i).getValeurActuelle())
 							         + "|";
 							if(cptLig==analyseCode.getVariables().size())
 								endData=true;
@@ -93,12 +94,14 @@ public class CUI {
 		   ------------------------------------------------ */
 		
 		/* ---------------------------------------
-		   ------- Affichage de la Console -------
+		   ------- Affichage de la Console ------- 
 		   --------------------------------------- */
 		sRet += "\n¨¨¨¨¨¨¨¨¨¨¨\n";
 		sRet += "| CONSOLE |\n";
 		for (int i = 0; i <= 86; i++) sRet += "¨";
 		sRet += "\n";
+		
+		
 		for (int cptLig = 0; cptLig < resultConsole.size(); cptLig++) // Peut afficher jusqu'à 999 lignes.
 			sRet += '|' + resultConsole.get(cptLig)
 				 + String.format("%" + (87 - resultConsole.get(cptLig).length()) + "s", "|\n");
@@ -110,8 +113,14 @@ public class CUI {
 		System.out.println(sRet);
 	}
 	
+	public void rafraichir()
+	{
+		affichage();
+		//arraylist des ecrire
+	}
+	
 	public static void main(String a[])
 	{
-		CUI cui = new CUI();
+		CUI cui = new CUI(a[0]);
 	}
 }

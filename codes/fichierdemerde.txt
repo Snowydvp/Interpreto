@@ -3,39 +3,23 @@ constante:
 
 variable:
 	x, y	: entier
+	a:booleen
+	b:entier
+	c:reel
+	d:caractere
+	a:entier
+	christophe:chaine
 
 DEBUT
 x ◄— 5
 y ◄— 3
-	ecrire(x)	lire(x)
-		
-	ecrire ( "etape 0")
+a ◄— vrai
+b ◄— 45
+c ◄— 4.5
+d ◄— 'q'
+christophe ◄— "Antoine"
 
-	si x = 5 alors
-
-		ecrire ( "etape 1" )
-
-		si y = 2 alors
-			ecrire ( "etape 2" )
-		fsi
-
-		ecrire ( "etape 3" )
-
-		si y = 2 alors
-			ecrire ("etape 4")
-		sinon
-			ecrire ("etape 5")
-		fsi
-
-	fsi
-
-	si y = 7 alors
-		ecrire ("etape 6")
-	sinon
-		ecrire ("etape 7")
-	fsi
-
-
-	ecrire ( "etape 8" )
+	lire (x)		
+	ecrire(x)
 
 FIN

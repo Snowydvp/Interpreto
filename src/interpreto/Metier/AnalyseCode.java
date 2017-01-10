@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import interpreto.Metier.Type.BOOLEEN;
 import interpreto.Metier.Type.Variable;
 
 public class AnalyseCode {
@@ -26,7 +27,6 @@ public class AnalyseCode {
 		codeAnalyse = getMotsCouleur();
 		variables = new ArrayList<>();
 
-		traiterCode(codeBrut);
 	}
 
 	/**
@@ -101,22 +101,23 @@ public class AnalyseCode {
 	 * 
 	 * @param motCle
 	 */
-	public void traiterCode(ArrayList<String> code) {
-		for (int i = 0; i < code.size(); i++) {
-			String ligne = code.get(i);
+	public void traiterCode() {
+		for (int i = 0; i < codeBrut.size(); i++) {
+			String ligne = codeBrut.get(i);
 			Scanner scLigne = new Scanner(ligne);
 			if (ligne.contains("variable:")) {
 				// Un programme ne possédant pas de variable, n'aura pas la
 				// ligne variable:
 
-				String declaration = code.get(++i);
+				String declaration = codeBrut.get(++i);
 
 				while (!declaration.equals("DEBUT")) {
 					if (declaration.contains(":"))
 						declarerVariable(declaration);
-					declaration = code.get(++i);
+					declaration = codeBrut.get(++i);
 				}
-			}
+			} else if (ligne.contains("◄—"))
+				affecterVariable(ligne);
 
 			while (scLigne.hasNext()) {
 				String expression = scLigne.next();
@@ -124,40 +125,74 @@ public class AnalyseCode {
 				 * ----- Déclaration des variables -----
 				 */
 
-				if (estFonction(expression)) {
-					// System.out.println("fonction : " + expression);
-				} else if (expression.equals("◄—"))
-					instancierVariable(ligne);
+				if (estFonction(expression))
+					traiterFonction(ligne);
 
 			}
 			scLigne.close();
 		}
 	}
-	
-	public void traiterFonction(String expression)
-	{
+
+	/**
+	 * Methode recursive qui interprète toutes les fonctions
+	 * 
+	 * @param expression
+	 */
+	public boolean traiterFonction(String ligne) {
+		// Dans le cas ou une seule expression est autorise par ligne
+		ligne = ligne.trim();
 		
+		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
+		if (ligne.contains("lire")){
+			Variable var = rechercherVariable(parametre);
+			if (var == null)
+				return false;
+			stockerLire(var);
+		}
+
+		return true;
 	}
 
-	public void instancierVariable(String ligne) {
-		String nomVariable = ligne.substring(0, ligne.indexOf("◄—"));
-		String valeur = ligne.substring(ligne.indexOf("◄—") + 2);
+	public void stockerLire(Variable var) {
+		Scanner sc = new Scanner(System.in);
+		
+		if(!var.modifierValeur(sc.nextLine()))
+			//Gerer les exceptions
+			System.out.println("Erreur");
+	}
+
+	public boolean affecterVariable(String ligne) {
+		String nomVariable = ligne.substring(0, ligne.indexOf("◄—")).trim();
+		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
 		try {
-			if (valeur.contains(nomVariable))
-				interpreteur.eval(nomVariable + "=" + valeur);
+			for (Variable var : variables)
+				if (var.getNomVariable().equals(nomVariable)) {
+					Variable v = rechercherVariable(nomVariable);
+					if (v.modifierValeur(valeur)) {
+						if (v.getType().equals("booleen"))
+							valeur = BOOLEEN.getBoolean(valeur);
+						interpreteur.eval(nomVariable + "=" + valeur);
+					}
+					return true;
+				}
 		} catch (EvalError e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return false;
 	}
 
-	public void declarerVariable(String ligne) {
-		// Dans le cas ou une seul affectation par ligne est autorisé
+	public boolean declarerVariable(String ligne) {
+		// Dans le cas ou une seul affectation par ligne est autorisée
 		String type = ligne.substring(ligne.indexOf(':') + 1);
 		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
 		// instancier et enregistrer la variable
 		try {
 			for (String nom : nomsVariable) {
+				// verification de la non-existence de la variable
+				for (Variable varExist : variables)
+					if (varExist.getNomVariable().equals(nom.trim()))
+						return false;
 				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type.trim().toUpperCase())
 						.getConstructors()[0].newInstance(nom.trim()));
 				interpreteur.eval(nom);
@@ -167,22 +202,22 @@ public class AnalyseCode {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return true;
 	}
-	
-	public ArrayList<Variable> getVariables()
-	{
+
+	public ArrayList<Variable> getVariables() {
 		return this.variables;
 	}
-	
-	public String getValeurVariable(Variable var)
-	{
-		return "null";
+
+	public Variable rechercherVariable(String nom) {
+		for (Variable var : variables)
+			if (var.getNomVariable().equals(nom))
+				return var;
+		return null;
 	}
 
 	// test de cette classe
 	public static void main(String arg[]) {
 		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
-		for (Variable s : an.variables)
-			System.out.println(s.getNomVariable());
 	}
 }

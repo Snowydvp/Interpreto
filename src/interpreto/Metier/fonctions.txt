@@ -1,7 +1,5 @@
-lire
-ecrire
-enChaine
-car
+﻿enChaine
+//car
 enRéel
 enEntier
 ord
@@ -15,3 +13,5 @@ annee
 estRéel
 estEntier
 hasard
+ecrire
+lire

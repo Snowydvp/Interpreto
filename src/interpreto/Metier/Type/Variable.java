@@ -6,13 +6,15 @@ import java.util.ArrayList;
  * Classe mère recouvrant tout les types de variables
  * 
  * @author Equipe 7
+ * @param <type>
  *
  */
 public abstract class Variable {
 
 	protected String nomVariable;
-	protected ArrayList valeurs;
+	protected ArrayList<String> valeurs;
 	protected boolean estTableau, estConstante;
+	protected String valeurDefaut = "null";
 	/**
 	 * Cette variable est utilisé uniquement lorsque la variable est un tableau
 	 **/
@@ -23,7 +25,7 @@ public abstract class Variable {
 		this.estConstante = false; // a travailler plus tard
 
 		this.estTableau = false;
-		valeurs = new ArrayList<>();
+		valeurs = new ArrayList<String>();
 	}
 
 	// a travailler plus tard
@@ -40,6 +42,13 @@ public abstract class Variable {
 	public ArrayList getValeurs() {
 		return valeurs;
 	}
+	
+	public String getValeurActuelle()
+	{
+		if(!valeurs.isEmpty())
+			return valeurs.get(valeurs.size() - 1);
+		return valeurDefaut;
+	}
 
 	public boolean isEstTableau() {
 		return estTableau;
@@ -54,17 +63,12 @@ public abstract class Variable {
 			valeurs.remove(valeurs.size() - 1);
 	}
 
-	public boolean modifierValeur(Object val) {
-		/*
-		 * if(estConstante && valeurs.isEmpty()) { valeurs.add(val); return
-		 * true; } if (val.getClass() == type.getClass()) { valeurs.add(val);
-		 * return true; }
-		 */
-		return false;
-	}
+	public abstract boolean modifierValeur(String val);
 
 	public String getType() {
+		
 		return getClass().getSimpleName().toLowerCase();
 	}
+	
 
 }
