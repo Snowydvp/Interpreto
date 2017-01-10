@@ -2,16 +2,18 @@ package interpreto.Metier;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import interpreto.Metier.Type.Variable;
 
 public class AnalyseCode {
 
 	ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs;
+	ArrayList<Variable> variables;
 	Interpreter interpreteur;
 
 	public AnalyseCode(String fichier) {
@@ -22,6 +24,7 @@ public class AnalyseCode {
 		motsClefs = new ArrayList<>(fonctions);
 		motsClefs.addAll(conditions);
 		codeAnalyse = getMotsCouleur();
+		variables = new ArrayList<>();
 
 		traiterCode(codeBrut);
 	}
@@ -94,13 +97,12 @@ public class AnalyseCode {
 	}
 
 	/**
-	 * Cette méthode recursive interprète le code
+	 * Interpretation du code dans son integralite
 	 * 
 	 * @param motCle
 	 */
 	public void traiterCode(ArrayList<String> code) {
-		for(int i=0; i<code.size(); i++)
-		{
+		for (int i = 0; i < code.size(); i++) {
 			String ligne = code.get(i);
 			Scanner scLigne = new Scanner(ligne);
 			if (ligne.contains("variable:")) {
@@ -110,7 +112,7 @@ public class AnalyseCode {
 				String declaration = code.get(++i);
 
 				while (!declaration.equals("DEBUT")) {
-					if(declaration.contains(":"))
+					if (declaration.contains(":"))
 						declarerVariable(declaration);
 					declaration = code.get(++i);
 				}
@@ -131,13 +133,18 @@ public class AnalyseCode {
 			scLigne.close();
 		}
 	}
+	
+	public void traiterFonction(String expression)
+	{
+		
+	}
 
 	public void instancierVariable(String ligne) {
 		String nomVariable = ligne.substring(0, ligne.indexOf("◄—"));
 		String valeur = ligne.substring(ligne.indexOf("◄—") + 2);
 		try {
-			//verififier si ele existe ??
-			interpreteur.eval(nomVariable + "=" + valeur);
+			if (valeur.contains(nomVariable))
+				interpreteur.eval(nomVariable + "=" + valeur);
 		} catch (EvalError e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -146,14 +153,36 @@ public class AnalyseCode {
 
 	public void declarerVariable(String ligne) {
 		// Dans le cas ou une seul affectation par ligne est autorisé
-		String nomsVariable = ligne.substring(0,ligne.indexOf(':'));
-		String type = ligne.substring(ligne.indexOf(':')+1);
-		//instancier et enregistrer la variable
+		String type = ligne.substring(ligne.indexOf(':') + 1);
+		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
+		// instancier et enregistrer la variable
+		try {
+			for (String nom : nomsVariable) {
+				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type.trim().toUpperCase())
+						.getConstructors()[0].newInstance(nom.trim()));
+				interpreteur.eval(nom);
+			}
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException
+				| InvocationTargetException | SecurityException | EvalError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public ArrayList<Variable> getVariables()
+	{
+		return this.variables;
+	}
+	
+	public String getValeurVariable(Variable var)
+	{
+		return "null";
 	}
 
 	// test de cette classe
 	public static void main(String arg[]) {
 		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
-
+		for (Variable s : an.variables)
+			System.out.println(s.getNomVariable());
 	}
 }

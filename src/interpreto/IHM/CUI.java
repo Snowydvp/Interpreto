@@ -23,17 +23,6 @@ public class CUI {
 		resultConsole.add("etape1 blablabla");
 		resultConsole.add("etape2");
 		resultConsole.add("etape3");
-		ArrayList<ArrayList<String>> data = new ArrayList<>();
-		ArrayList<String> var = new ArrayList<>();
-		var.add("x");
-		var.add("entier");
-		var.add("5");
-		ArrayList<String> var2 = new ArrayList<>();
-		var2.add("y");
-		var2.add("entier");
-		var2.add("7");
-		data.add(var);
-		data.add(var2);
 		/* --------------------------
 		   --- Fin Initialisation ---
 		   -------------------------- */
@@ -49,9 +38,9 @@ public class CUI {
 		   --- Fin Affichage des entetes Code et Données ---
 		   ------------------------------------------------- */
 		
-		/* ------------------------------------------------
-		   ------- Affichage du Code et des Données -------
-		   ------------------------------------------------ */
+		/* ---------------------------------
+		   ------- Affichage du Code -------
+		   --------------------------------- */
 		sRet += "\n";
 		int tailleNbLignes = (code.size() / 10);
 		for (int cptLig = 0; cptLig < code.size(); cptLig++) {
@@ -64,24 +53,27 @@ public class CUI {
 				 + line
 				 //Detecter le nombre de couleur par ligne pour rajouter de la longueur
 				 + String.format("%" + (81 - line.length() + (nbCouleur * 5.5) - 4) + "s", "| ");
+			/* ---------------------------------------
+			   ------- Affichage des variables -------
+			   --------------------------------------- */
 			if(cptLig == 0)
 				sRet += "|    NOM     |   TYPE     |   VALEUR               |\n";
 			else{
-				if(data.size()>0){
+				if(analyseCode.getVariables().size() > 0){
 					if(endData){
 						for (int y = 0; y <= 51; y++) sRet += "¨"; // bordure de fin des données
 						endData = false;
 					}else{
-						for(int i = 0 ; i < data.size() ; i++){
+						for(int i = 0 ; i < analyseCode.getVariables().size() ; i++){
 							if(i==cptLig-1)
 								sRet += "| "
-							         + String.format("%-11s", data.get(i).get(0)) 
+							         + String.format("%-11s", analyseCode.getVariables().get(i).getNomVariable())
 							         + "| " 
-							         + String.format("%-11s", data.get(i).get(1)) 
+							         + String.format("%-11s", analyseCode.getVariables().get(i).getType()) 
 							         + "| " 
-							         + String.format("%-23s", data.get(i).get(2)) 
+							         + String.format("%-23s", analyseCode.getValeurVariable(analyseCode.getVariables().get(i)))
 							         + "|";
-							if(cptLig==data.size())
+							if(cptLig==analyseCode.getVariables().size())
 								endData=true;
 						}
 					}
