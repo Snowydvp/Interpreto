@@ -14,10 +14,11 @@ import interpreto.Metier.Type.Variable;
 
 public class AnalyseCode {
 
-	ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs, console;
-	ArrayList<Variable> variables;
-	Interpreter interpreteur;
-	IHM ihm;
+	private ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs, console;
+	private ArrayList<Variable> variables;
+	private Interpreter interpreteur;
+	private IHM ihm;
+	boolean pause;
 
 	public AnalyseCode(String fichier, IHM ihm) {
 		this.ihm = ihm;
@@ -85,19 +86,41 @@ public class AnalyseCode {
 	 * @return texte du code analysé
 	 */
 
-	public ArrayList<String> getCodeBrut() {
-		return this.codeBrut;
-	}
-
 	public ArrayList<String> getCodeAnalyse() {
 		return this.codeAnalyse;
 	}
 
-	public boolean estFonction(String expression) {
+	private boolean estFonction(String expression) {
 		for (String fonction : fonctions)
 			if (expression.contains(fonction))
 				return true;
 		return false;
+	}
+
+	public void traiterInitialisation() {
+
+		int i = 0;
+		while (i < codeBrut.size() && codeBrut.get(i).contains("DEBUT")) {
+			String ligne = codeBrut.get(i);
+			if (ligne.contains("variable:")) {
+				// Un programme ne possédant pas de variable, n'aura pas la
+				// ligne variable:
+				String declaration = codeBrut.get(++i);
+				while (!declaration.equals("DEBUT") && !declaration.contains("constante:")) {
+					if (declaration.contains(":"))
+						declarerVariable(declaration);
+					declaration = codeBrut.get(++i);
+				}
+			} else if (ligne.contains("constante")) {
+				String declaration = codeBrut.get(++i);
+				while (!declaration.equals("DEBUT") && !declaration.equals("variable:")) {
+					if (declaration.contains(":"))
+						// declarer constante
+						declaration = codeBrut.get(++i);
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -106,34 +129,22 @@ public class AnalyseCode {
 	 * @param motCle
 	 */
 	public void traiterCode() {
-		for (int i = 0; i < codeBrut.size(); i++) {
+		int i = 0;
+		while (i < codeBrut.size() && !pause) {
 			String ligne = codeBrut.get(i);
 			Scanner scLigne = new Scanner(ligne);
-			if (ligne.contains("variable:")) {
-				// Un programme ne possédant pas de variable, n'aura pas la
-				// ligne variable:
 
-				String declaration = codeBrut.get(++i);
-
-				while (!declaration.equals("DEBUT")) {
-					if (declaration.contains(":"))
-						declarerVariable(declaration);
-					declaration = codeBrut.get(++i);
-				}
-			} else if (ligne.contains("◄—"))
+			if (ligne.contains("◄—"))
 				affecterVariable(ligne);
 
 			while (scLigne.hasNext()) {
 				String expression = scLigne.next();
-				/*
-				 * ----- Déclaration des variables -----
-				 */
 
 				if (estFonction(expression))
 					traiterFonction(ligne);
 
 			}
-
+			i++;
 			scLigne.close();
 		}
 		console.add("fin de l'éxécution");
@@ -145,7 +156,7 @@ public class AnalyseCode {
 	 * 
 	 * @param expression
 	 */
-	public boolean traiterFonction(String ligne) {
+	private boolean traiterFonction(String ligne) {
 		// Dans le cas ou une seule expression est autorise par ligne
 		ligne = ligne.trim();
 
@@ -156,14 +167,19 @@ public class AnalyseCode {
 				return false;
 			lire(var);
 		} else if (ligne.contains("ecrire")) {
-			
 			String strSortie = "";
-			String[] chaines = parametre.split("&"); //Gère la concaténation
-			for (String chaine : chaines) { // Cas où ce qui est à afficher
-											// constitue une chaine de
-											// caractères
-				if (chaine.charAt(0) == '"' && chaine.charAt(chaine.length() - 1) == '"')
-					strSortie += chaine.substring(chaine.indexOf('"')+1, chaine.lastIndexOf('"'));
+			String[] chaines = parametre.split("&"); // Gère la concaténation
+			for (String chaine : chaines) {
+				// Cas où ce qui est à afficher
+				// constitue une chaine de
+				// caractères
+
+				if (chaine.lastIndexOf('"') != chaine.indexOf('"')) // On
+																	// vérifie
+																	// si deux
+																	// guillements
+																	// existent
+					strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
 				else// Cas où ce qui est à afficher est une variable
 				{
 					Variable var = rechercherVariable(chaine.trim());
@@ -179,26 +195,30 @@ public class AnalyseCode {
 		return true;
 	}
 
-	public void lire(Variable var) {
+	private void lire(Variable var) {
+		boolean erreurEntree = false;
 		Scanner sc = new Scanner(System.in);
-		//la fonction lire attends la varibale actuelle ainsi que le suivante !!
-		//il faudrais utiliser un wait..
+		// la fonction lire attends la varibale actuelle ainsi que le suivante
+		// !!
+		// il faudrais utiliser un wait..
 		String entree = sc.nextLine();
-		
-		if(var.getType().equals("chaine"))
+		if (var.getType().equals("chaine"))
 			entree = '"' + entree + '"';
-		else if(var.getType().equals("caractere"))
+		else if (var.getType().equals("caractere"))
 			entree = "'" + entree + "'";
-		
+
 		if (!var.modifierValeur(entree))
 			// Gerer les exceptions autrement
-			console.add("Erreur d'entrée sur la variable "+var.getNom());
+			erreurEntree = true;
+
 		sc.close();
-		//On laisse ce qu'as rentré l'utilisateur dans la console
+		// On laisse ce qu'as rentré l'utilisateur dans la console
 		console.add(entree);
+		if (erreurEntree)
+			console.add("Erreur d'entrée sur la variable " + var.getNom());
 	}
 
-	public boolean affecterVariable(String ligne) {
+	private boolean affecterVariable(String ligne) {
 		String nomVariable = ligne.substring(0, ligne.indexOf("◄—")).trim();
 		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
 		try {
@@ -219,7 +239,7 @@ public class AnalyseCode {
 		return false;
 	}
 
-	public boolean declarerVariable(String ligne) {
+	private boolean declarerVariable(String ligne) {
 		// Dans le cas ou une seul affectation par ligne est autorisée
 		String type = ligne.substring(ligne.indexOf(':') + 1);
 		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
@@ -245,13 +265,12 @@ public class AnalyseCode {
 	public ArrayList<Variable> getVariables() {
 		return this.variables;
 	}
-	
-	public ArrayList<String> getConsole()
-	{
+
+	public ArrayList<String> getConsole() {
 		return this.console;
 	}
 
-	public Variable rechercherVariable(String nom) {
+	private Variable rechercherVariable(String nom) {
 		for (Variable var : variables)
 			if (var.getNom().equals(nom))
 				return var;
