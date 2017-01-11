@@ -8,17 +8,21 @@ import java.util.Scanner;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import interpreto.IHM.IHM;
 import interpreto.Metier.Type.BOOLEEN;
 import interpreto.Metier.Type.Variable;
 
 public class AnalyseCode {
 
-	ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs;
+	ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs, console;
 	ArrayList<Variable> variables;
 	Interpreter interpreteur;
+	IHM ihm;
 
-	public AnalyseCode(String fichier) {
+	public AnalyseCode(String fichier, IHM ihm) {
+		this.ihm = ihm;
 		interpreteur = new Interpreter();
+		console = new ArrayList<>();
 		codeBrut = new LectureFichier(fichier).getCode();
 		fonctions = construireListeMots("src/interpreto/Metier/fonctions.txt");
 		conditions = construireListeMots("src/interpreto/Metier/conditions.txt");
@@ -129,8 +133,11 @@ public class AnalyseCode {
 					traiterFonction(ligne);
 
 			}
+
 			scLigne.close();
 		}
+		console.add("fin de l'éxécution");
+		ihm.rafraichir();
 	}
 
 	/**
@@ -141,24 +148,47 @@ public class AnalyseCode {
 	public boolean traiterFonction(String ligne) {
 		// Dans le cas ou une seule expression est autorise par ligne
 		ligne = ligne.trim();
-		
+
 		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
-		if (ligne.contains("lire")){
+		if (ligne.contains("lire")) {
 			Variable var = rechercherVariable(parametre);
 			if (var == null)
 				return false;
-			stockerLire(var);
+			lire(var);
+		} else if (ligne.contains("ecrire")) {
+			
+			String strSortie = "";
+			String[] chaines = parametre.split("&");
+			for (String chaine : chaines) { // Cas où ce qui est à afficher
+											// constitue une chaine de
+											// caractères
+				if (chaine.charAt(0) == '"' && chaine.charAt(chaine.length() - 1) == '"')
+					strSortie += chaine;
+				else// Cas où ce qui est à afficher est une variable
+				{
+					Variable var = rechercherVariable(chaine.trim());
+					if (var == null)
+						return false;
+					strSortie += var.getValeurActuelle();
+				}
+			}
+			console.add(strSortie);
+			ihm.rafraichir();
 		}
 
 		return true;
 	}
 
-	public void stockerLire(Variable var) {
-		Scanner sc = new Scanner(System.in);
+	public void lire(Variable var) {
 		
-		if(!var.modifierValeur(sc.nextLine()))
-			//Gerer les exceptions
+		Scanner sc = new Scanner(System.in);
+		String entree = sc.nextLine();
+		if (!var.modifierValeur(entree))
+			// Gerer les exceptions autrement
 			System.out.println("Erreur");
+		sc.close();
+		//On laisse ce qu'as rentré l'utilisateur dans la console
+		console.add(entree);
 	}
 
 	public boolean affecterVariable(String ligne) {
@@ -208,6 +238,11 @@ public class AnalyseCode {
 	public ArrayList<Variable> getVariables() {
 		return this.variables;
 	}
+	
+	public ArrayList<String> getConsole()
+	{
+		return this.console;
+	}
 
 	public Variable rechercherVariable(String nom) {
 		for (Variable var : variables)
@@ -216,8 +251,4 @@ public class AnalyseCode {
 		return null;
 	}
 
-	// test de cette classe
-	public static void main(String arg[]) {
-		AnalyseCode an = new AnalyseCode("codes/fichierdemerde.txt");
-	}
 }

@@ -19,7 +19,7 @@ c ◄— 4.5
 d ◄— 'q'
 christophe ◄— "Antoine"
 
-	lire (x)		
-	ecrire(x)
+ecrire("entrez la valeur de christophe")	
+	lire(christophe)
 
 FIN

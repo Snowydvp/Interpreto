@@ -3,27 +3,25 @@ package interpreto.IHM;
 import java.util.ArrayList;
 import interpreto.Metier.*;
 
-public class CUI {
+public class CUI implements IHM{
 	
 	private AnalyseCode analyseCode;
 	private String nomFichier;
 	
 	public CUI(String nomFichier) {
 		this.nomFichier = nomFichier;
-		analyseCode = new AnalyseCode(nomFichier);
+		analyseCode = new AnalyseCode(nomFichier, this);
 		analyseCode.traiterCode();
-		affichage();
 		
 	}
 
-	public void affichage() {
+	private void affichage() {
 		/* --------------------------
 		   ----- Initialisation -----
 		   -------------------------- */
-		boolean endData = false; // Variables permettant de stocker si toutes les données ont été affichées
+		boolean endData = false; // Permet de savoir si toutes les données ont été affichées
 		String sRet = "";
 		ArrayList<String> code = analyseCode.getCodeAnalyse();
-		ArrayList<String> resultConsole = new ArrayList<String>();
 		/* --------------------------
 		   --- Fin Initialisation ---
 		   -------------------------- */
@@ -102,10 +100,10 @@ public class CUI {
 		sRet += "\n";
 		
 		
-		for (int cptLig = 0; cptLig < resultConsole.size(); cptLig++) // Peut afficher jusqu'à 999 lignes.
-			sRet += '|' + resultConsole.get(cptLig)
-				 + String.format("%" + (87 - resultConsole.get(cptLig).length()) + "s", "|\n");
-		for (int i = 0; i <= 86; i++) sRet += "¨";
+		for (int cptLig = 0; cptLig < analyseCode.getConsole().size(); cptLig++) // Peut afficher jusqu'à 999 lignes.
+			sRet += '|' + analyseCode.getConsole().get(cptLig)
+				 + String.format("%" + (87 - analyseCode.getConsole().get(cptLig).length()) + "s", "|\n");
+		//for (int i = 0; i <= 86; i++) sRet += "¨";
 		/* ---------------------------------------
 		   ----- Fin Affichage de la Console -----
 		   --------------------------------------- */
@@ -115,8 +113,8 @@ public class CUI {
 	
 	public void rafraichir()
 	{
+		System.out.println("refresh");
 		affichage();
-		//arraylist des ecrire
 	}
 	
 	public static void main(String a[])
