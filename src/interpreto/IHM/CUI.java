@@ -66,7 +66,7 @@ public class CUI implements IHM{
 						for(int i = 0 ; i < analyseCode.getVariables().size() ; i++){
 							if(i==cptLig-1)
 								sRet += "| "
-							         + String.format("%-11s", analyseCode.getVariables().get(i).getNomVariable())
+							         + String.format("%-11s", analyseCode.getVariables().get(i).getNom())
 							         + "| " 
 							         + String.format("%-11s", analyseCode.getVariables().get(i).getType()) 
 							         + "| " 
@@ -113,7 +113,6 @@ public class CUI implements IHM{
 	
 	public void rafraichir()
 	{
-		System.out.println("refresh");
 		affichage();
 	}
 	

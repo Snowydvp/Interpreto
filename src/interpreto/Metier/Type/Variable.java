@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public abstract class Variable {
 
-	protected String nomVariable;
+	protected String nom;
 	protected ArrayList<String> valeurs;
 	protected boolean estTableau, estConstante;
 	protected String valeurDefaut = "null";
@@ -20,8 +20,8 @@ public abstract class Variable {
 	 **/
 	protected int taille;
 
-	public Variable(String nomVariable) {
-		this.nomVariable = nomVariable;
+	public Variable(String nom) {
+		this.nom = nom;
 		this.estConstante = false; // a travailler plus tard
 
 		this.estTableau = false;
@@ -35,8 +35,8 @@ public abstract class Variable {
 		this.taille = taille;
 	}
 
-	public String getNomVariable() {
-		return nomVariable;
+	public String getNom() {
+		return nom;
 	}
 
 	public ArrayList getValeurs() {

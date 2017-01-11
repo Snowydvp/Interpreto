@@ -158,12 +158,12 @@ public class AnalyseCode {
 		} else if (ligne.contains("ecrire")) {
 			
 			String strSortie = "";
-			String[] chaines = parametre.split("&");
+			String[] chaines = parametre.split("&"); //Gère la concaténation
 			for (String chaine : chaines) { // Cas où ce qui est à afficher
 											// constitue une chaine de
 											// caractères
 				if (chaine.charAt(0) == '"' && chaine.charAt(chaine.length() - 1) == '"')
-					strSortie += chaine;
+					strSortie += chaine.substring(chaine.indexOf('"')+1, chaine.lastIndexOf('"'));
 				else// Cas où ce qui est à afficher est une variable
 				{
 					Variable var = rechercherVariable(chaine.trim());
@@ -180,12 +180,19 @@ public class AnalyseCode {
 	}
 
 	public void lire(Variable var) {
-		
 		Scanner sc = new Scanner(System.in);
+		//la fonction lire attends la varibale actuelle ainsi que le suivante !!
+		//il faudrais utiliser un wait..
 		String entree = sc.nextLine();
+		
+		if(var.getType().equals("chaine"))
+			entree = '"' + entree + '"';
+		else if(var.getType().equals("caractere"))
+			entree = "'" + entree + "'";
+		
 		if (!var.modifierValeur(entree))
 			// Gerer les exceptions autrement
-			System.out.println("Erreur");
+			console.add("Erreur d'entrée sur la variable "+var.getNom());
 		sc.close();
 		//On laisse ce qu'as rentré l'utilisateur dans la console
 		console.add(entree);
@@ -196,7 +203,7 @@ public class AnalyseCode {
 		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
 		try {
 			for (Variable var : variables)
-				if (var.getNomVariable().equals(nomVariable)) {
+				if (var.getNom().equals(nomVariable)) {
 					Variable v = rechercherVariable(nomVariable);
 					if (v.modifierValeur(valeur)) {
 						if (v.getType().equals("booleen"))
@@ -221,7 +228,7 @@ public class AnalyseCode {
 			for (String nom : nomsVariable) {
 				// verification de la non-existence de la variable
 				for (Variable varExist : variables)
-					if (varExist.getNomVariable().equals(nom.trim()))
+					if (varExist.getNom().equals(nom.trim()))
 						return false;
 				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type.trim().toUpperCase())
 						.getConstructors()[0].newInstance(nom.trim()));
@@ -246,7 +253,7 @@ public class AnalyseCode {
 
 	public Variable rechercherVariable(String nom) {
 		for (Variable var : variables)
-			if (var.getNomVariable().equals(nom))
+			if (var.getNom().equals(nom))
 				return var;
 		return null;
 	}

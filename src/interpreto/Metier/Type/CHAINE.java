@@ -8,7 +8,7 @@ public class CHAINE extends Variable {
 
 	@Override
 	public boolean modifierValeur(String val) {
-		if(val.charAt(0) != '"' || val.charAt(val.length() - 1) != '"')
+		if(val.charAt(0) != '"' && val.charAt(val.length() - 1) != '"')
 			return false;
 		valeurs.add(val);
 		return true;

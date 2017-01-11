@@ -11,7 +11,8 @@ public class REEL extends Variable{
 	public boolean modifierValeur(String val) {
 		try
 		{
-			Double.parseDouble(val);
+			double d = Double.parseDouble(val);
+			//mettre la virgule si le nombre est entier
 			valeurs.add(val);
 		}catch(NumberFormatException e)
 		{
