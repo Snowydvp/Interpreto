@@ -120,7 +120,7 @@ public class AnalyseCode {
 				}
 			}
 		}
-
+		ihm.rafraichir();
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class AnalyseCode {
 			i++;
 			scLigne.close();
 		}
-		console.add("fin de l'éxécution");
-		ihm.rafraichir();
+		console.add("fin de l'exécution");
+		
 	}
 
 	/**
@@ -189,7 +189,6 @@ public class AnalyseCode {
 				}
 			}
 			console.add(strSortie);
-			ihm.rafraichir();
 		}
 
 		return true;
