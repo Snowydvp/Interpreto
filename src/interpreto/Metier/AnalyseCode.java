@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import bsh.EvalError;
 import bsh.Interpreter;
 import interpreto.IHM.IHM;
@@ -14,50 +13,23 @@ import interpreto.Metier.Type.Variable;
 
 public class AnalyseCode {
 
-	private ArrayList<String> codeBrut, codeAnalyse, fonctions, conditions, motsClefs, console;
+	private ArrayList<String> code, fonctions, conditions, console;
 	private ArrayList<Variable> variables;
 	private Interpreter interpreteur;
 	private IHM ihm;
-	boolean pause;
+	private int ligneInterpretee;
 
-	public AnalyseCode(String fichier, IHM ihm) {
+	public AnalyseCode(String fichier,IHM ihm) {
 		this.ihm = ihm;
+		ligneInterpretee = 0;
 		interpreteur = new Interpreter();
 		console = new ArrayList<>();
-		codeBrut = new LectureFichier(fichier).getCode();
+		code = new LectureFichier(fichier).getCode();
 		fonctions = construireListeMots("src/interpreto/Metier/fonctions.txt");
 		conditions = construireListeMots("src/interpreto/Metier/conditions.txt");
-		motsClefs = new ArrayList<>(fonctions);
-		motsClefs.addAll(conditions);
-		codeAnalyse = getMotsCouleur();
 		variables = new ArrayList<>();
 
 	}
-
-	/**
-	 * Parcours tout les mots existant dans le code, et colorie les mots-clés
-	 * 
-	 * @return nouvelle liste des mots coloriés
-	 */
-	private ArrayList<String> getMotsCouleur() {
-		ArrayList<String> codeCouleur = new ArrayList<>();
-		for (int cptLig = 0; cptLig < codeBrut.size(); cptLig++) {
-			for (String motcle : this.motsClefs) {
-				if (codeCouleur.size() <= cptLig)
-					// on colorie pour la premiere fois la ligne
-					codeCouleur.add(cptLig,
-							codeBrut.get(cptLig).replaceAll(motcle + "", "\u001B[1;36m" + motcle + "\u001B[0m"));
-				else
-					// on reprend la ligne deja coloriée afin de colorier les
-					// autres mots-clés
-					codeCouleur.set(cptLig,
-							codeCouleur.get(cptLig).replaceAll(motcle + "", "\u001B[1;36m" + motcle + "\u001B[0m"));
-
-			}
-		}
-		return codeCouleur;
-	}
-
 	/**
 	 * Construit la liste de toutes les fonctions a partir du fichier texte
 	 * 
@@ -86,9 +58,6 @@ public class AnalyseCode {
 	 * @return texte du code analysé
 	 */
 
-	public ArrayList<String> getCodeAnalyse() {
-		return this.codeAnalyse;
-	}
 
 	private boolean estFonction(String expression) {
 		for (String fonction : fonctions)
@@ -98,29 +67,28 @@ public class AnalyseCode {
 	}
 
 	public void traiterInitialisation() {
-
 		int i = 0;
-		while (i < codeBrut.size() && codeBrut.get(i).contains("DEBUT")) {
-			String ligne = codeBrut.get(i);
+		while (!code.get(i).contains("DEBUT")) {
+			String ligne = code.get(++i);
 			if (ligne.contains("variable:")) {
 				// Un programme ne possédant pas de variable, n'aura pas la
 				// ligne variable:
-				String declaration = codeBrut.get(++i);
+				String declaration = code.get(++i);
 				while (!declaration.equals("DEBUT") && !declaration.contains("constante:")) {
 					if (declaration.contains(":"))
 						declarerVariable(declaration);
-					declaration = codeBrut.get(++i);
+					declaration = code.get(++i);
 				}
-			} else if (ligne.contains("constante")) {
-				String declaration = codeBrut.get(++i);
-				while (!declaration.equals("DEBUT") && !declaration.equals("variable:")) {
-					if (declaration.contains(":"))
-						// declarer constante
-						declaration = codeBrut.get(++i);
-				}
+				/*
+				 * } else if (ligne.contains("constante")) { String declaration
+				 * = code.get(++i); while (!declaration.equals("DEBUT") &&
+				 * !declaration.equals("variable:")) { if
+				 * (declaration.contains(":")) // declarer constante declaration
+				 * = code.get(++i); }
+				 */
 			}
 		}
-		ihm.rafraichir();
+		this.ligneInterpretee = i;
 	}
 
 	/**
@@ -128,15 +96,14 @@ public class AnalyseCode {
 	 * 
 	 * @param motCle
 	 */
-	public void traiterCode() {
-		int i = 0;
-		while (i < codeBrut.size() && !pause) {
-			String ligne = codeBrut.get(i);
-			Scanner scLigne = new Scanner(ligne);
+	private void traiterCode(int ligneInterpretee) {
+		String ligne = code.get(ligneInterpretee);
+		Scanner scLigne = new Scanner(ligne);
 
-			if (ligne.contains("◄—"))
-				affecterVariable(ligne);
+		if (ligne.contains("◄—"))
+			affecterVariable(ligne);
 
+		else {
 			while (scLigne.hasNext()) {
 				String expression = scLigne.next();
 
@@ -144,11 +111,8 @@ public class AnalyseCode {
 					traiterFonction(ligne);
 
 			}
-			i++;
-			scLigne.close();
 		}
-		console.add("fin de l'exécution");
-		
+		scLigne.close();
 	}
 
 	/**
@@ -196,11 +160,7 @@ public class AnalyseCode {
 
 	private void lire(Variable var) {
 		boolean erreurEntree = false;
-		Scanner sc = new Scanner(System.in);
-		// la fonction lire attends la varibale actuelle ainsi que le suivante
-		// !!
-		// il faudrais utiliser un wait..
-		String entree = sc.nextLine();
+		String entree = ihm.getEntree();
 		if (var.getType().equals("chaine"))
 			entree = '"' + entree + '"';
 		else if (var.getType().equals("caractere"))
@@ -210,7 +170,7 @@ public class AnalyseCode {
 			// Gerer les exceptions autrement
 			erreurEntree = true;
 
-		sc.close();
+		
 		// On laisse ce qu'as rentré l'utilisateur dans la console
 		console.add(entree);
 		if (erreurEntree)
@@ -269,7 +229,33 @@ public class AnalyseCode {
 		return this.console;
 	}
 
-	private Variable rechercherVariable(String nom) {
+	public boolean possedeSuivant() {
+		return !code.get(this.ligneInterpretee).contains("FIN");
+	}
+
+	public void traiteLigneSuivante() {
+		traiterCode(++ligneInterpretee);
+	}
+
+	public int getLigneInterpretee() {
+		return this.ligneInterpretee;
+	}
+	
+	public ArrayList<String> getMotsCles()
+	{
+		return this.conditions;
+	}
+	
+	public ArrayList<String> getCode()
+	{
+		return this.code;
+	}
+	
+
+	/**
+	 * Retourne la ligne actuellement traitée par l'interpreteur
+	 */
+	public Variable rechercherVariable(String nom) {
 		for (Variable var : variables)
 			if (var.getNom().equals(nom))
 				return var;

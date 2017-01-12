@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements IHM{
 
     public GUI() {
        setTitle("Interpreto"); 
@@ -53,4 +53,10 @@ public class GUI extends JFrame {
                 
        setVisible(true);
     }
+
+	@Override
+	public String getEntree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

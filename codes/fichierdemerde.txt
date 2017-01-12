@@ -1,28 +1,23 @@
 ALGORITHME NomAlgo
 constante:
-
+	MAXIMELINTOT ◄— 3
 variable:
 	x, y	: entier
 	a:booleen
 	b:entier
 	c:reel
 	d:caractere
-	a:entier
 	christophe:chaine
 
 DEBUT
-x ◄— 5
-y ◄— 3
-a ◄— vrai
-b ◄— 45
-c ◄— 4.5
-d ◄— 'q'
-christophe ◄— "Antoine"
 
-ecrire("entrez la valeur de a ")	
-lire(a)
-ecrire("entrer x")
-lire(x)
+lol
+ecrire(c)
+	lire(x)
+	lire(b)
+	lire(y)
+	
+
 
 	
 
