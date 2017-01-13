@@ -12,7 +12,7 @@ public class CARACTERE extends Variable {
 		if(val.length() != 3 || val.charAt(0) !='\'' && val.charAt(2) != '\'' )//On compte aussi les simples quote
 			return false;
 		valeurs.add(val);
-		return true;
+		return super.modifierValeur(val);
 	}
 
 }

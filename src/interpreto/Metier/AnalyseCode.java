@@ -3,13 +3,16 @@ package interpreto.Metier;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Scanner;
 import bsh.EvalError;
 import bsh.Interpreter;
 import interpreto.IHM.IHM;
 import interpreto.Metier.Type.BOOLEEN;
+import interpreto.Metier.Type.CARACTERE;
 import interpreto.Metier.Type.Variable;
+import sun.reflect.Reflection;
 
 public class AnalyseCode {
 
@@ -18,8 +21,10 @@ public class AnalyseCode {
 	private Interpreter interpreteur;
 	private IHM ihm;
 	private int ligneInterpretee;
+	// définis s'il existe une erreur sur la ligne actuellement interpretée
+	private boolean erreur;
 
-	public AnalyseCode(String fichier,IHM ihm) {
+	public AnalyseCode(String fichier, IHM ihm) {
 		this.ihm = ihm;
 		ligneInterpretee = 0;
 		interpreteur = new Interpreter();
@@ -30,6 +35,7 @@ public class AnalyseCode {
 		variables = new ArrayList<>();
 
 	}
+
 	/**
 	 * Construit la liste de toutes les fonctions a partir du fichier texte
 	 * 
@@ -58,7 +64,6 @@ public class AnalyseCode {
 	 * @return texte du code analysé
 	 */
 
-
 	private boolean estFonction(String expression) {
 		for (String fonction : fonctions)
 			if (expression.contains(fonction))
@@ -67,26 +72,33 @@ public class AnalyseCode {
 	}
 
 	public void traiterInitialisation() {
-		int i = 0;
+		int i = 1;
 		while (!code.get(i).contains("DEBUT")) {
-			String ligne = code.get(++i);
-			if (ligne.contains("variable:")) {
+			String ligne = code.get(i);
+			
+			
+		 if (ligne.contains("constante:")) {
+			System.out.println("constante detectée");
+			String declaration = code.get(i++);
+			while (!declaration.contains("DEBUT") && !declaration.contains("variable:")) {
+				/*if (declaration.contains("◄—")) // declarer constante
+					declarerConstante(declaration);*/
+				declaration = code.get(i++);
+			}
+			
+		 }else if (ligne.contains("variable:")) {
+				System.out.println("variable detectée");
 				// Un programme ne possédant pas de variable, n'aura pas la
 				// ligne variable:
 				String declaration = code.get(++i);
-				while (!declaration.equals("DEBUT") && !declaration.contains("constante:")) {
+				while (!declaration.contains("DEBUT") && !declaration.contains("constante:")) {
 					if (declaration.contains(":"))
 						declarerVariable(declaration);
-					declaration = code.get(++i);
+					declaration = code.get(i++);
 				}
-				/*
-				 * } else if (ligne.contains("constante")) { String declaration
-				 * = code.get(++i); while (!declaration.equals("DEBUT") &&
-				 * !declaration.equals("variable:")) { if
-				 * (declaration.contains(":")) // declarer constante declaration
-				 * = code.get(++i); }
-				 */
+
 			}
+		 i++;
 		}
 		this.ligneInterpretee = i;
 	}
@@ -101,14 +113,17 @@ public class AnalyseCode {
 		Scanner scLigne = new Scanner(ligne);
 
 		if (ligne.contains("◄—"))
-			affecterVariable(ligne);
+			erreur = affecterVariable(ligne);
 
 		else {
 			while (scLigne.hasNext()) {
 				String expression = scLigne.next();
 
 				if (estFonction(expression))
-					traiterFonction(ligne);
+					erreur = !traiterFonction(ligne);
+				else
+					// Si l'expression ne constitue pas une fonction
+					erreur = !expression.contains("FIN");
 
 			}
 		}
@@ -127,9 +142,8 @@ public class AnalyseCode {
 		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
 		if (ligne.contains("lire")) {
 			Variable var = rechercherVariable(parametre);
-			if (var == null)
-				return false;
-			lire(var);
+			return var != null && lire(var);
+
 		} else if (ligne.contains("ecrire")) {
 			String strSortie = "";
 			String[] chaines = parametre.split("&"); // Gère la concaténation
@@ -158,7 +172,7 @@ public class AnalyseCode {
 		return true;
 	}
 
-	private void lire(Variable var) {
+	private boolean lire(Variable var) {
 		boolean erreurEntree = false;
 		String entree = ihm.getEntree();
 		if (var.getType().equals("chaine"))
@@ -170,31 +184,32 @@ public class AnalyseCode {
 			// Gerer les exceptions autrement
 			erreurEntree = true;
 
-		
 		// On laisse ce qu'as rentré l'utilisateur dans la console
 		console.add(entree);
-		if (erreurEntree)
-			console.add("Erreur d'entrée sur la variable " + var.getNom());
+
+		return erreurEntree;
 	}
 
 	private boolean affecterVariable(String ligne) {
 		String nomVariable = ligne.substring(0, ligne.indexOf("◄—")).trim();
 		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
-		try {
-			for (Variable var : variables)
-				if (var.getNom().equals(nomVariable)) {
-					Variable v = rechercherVariable(nomVariable);
-					if (v.modifierValeur(valeur)) {
-						if (v.getType().equals("booleen"))
-							valeur = BOOLEEN.getBoolean(valeur);
+
+		for (Variable var : variables)
+			if (var.getNom().equals(nomVariable)) {
+				Variable v = rechercherVariable(nomVariable);
+				if (v.modifierValeur(valeur)) {
+					if (v.getType().equals("booleen"))
+						valeur = BOOLEEN.getBoolean(valeur);
+					try {
 						interpreteur.eval(nomVariable + "=" + valeur);
+					} catch (EvalError e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					return true;
 				}
-		} catch (EvalError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				return true;
+			}
+
 		return false;
 	}
 
@@ -203,22 +218,72 @@ public class AnalyseCode {
 		String type = ligne.substring(ligne.indexOf(':') + 1);
 		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
 		// instancier et enregistrer la variable
-		try {
-			for (String nom : nomsVariable) {
-				// verification de la non-existence de la variable
-				for (Variable varExist : variables)
-					if (varExist.getNom().equals(nom.trim()))
-						return false;
+
+		for (String nom : nomsVariable) {
+			// verification de la non-existence de la variable
+			for (Variable varExist : variables)
+				if (varExist.getNom().equals(nom.trim()))
+					return false;
+			try {
 				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type.trim().toUpperCase())
 						.getConstructors()[0].newInstance(nom.trim()));
 				interpreteur.eval(nom);
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException
+					| InvocationTargetException | SecurityException | EvalError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException
-				| InvocationTargetException | SecurityException | EvalError e) {
-			// TODO Auto-generated catch block
+		}
+
+		return true;
+	}
+
+	/**
+	 * Délare une constante
+	 * 
+	 * @param ligne
+	 *            Déclaration entière
+	 * @return Erreur sur la déclaration
+	 */
+	private boolean declarerConstante(String ligne) {
+		String nomVariable = ligne.substring(0, ligne.indexOf("◄—")).trim();
+		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
+		for (Variable varExist : variables)
+			if (varExist.getNom().equals(nomVariable))
+				return false;
+		try {
+			variables.add((Variable) getType(valeur).getConstructors()[1].newInstance(nomVariable, true));
+			interpreteur.equals(nomVariable);
+			return true;
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| SecurityException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;
+	}
+
+	/**
+	 * Cette classe renvoie le type d'une valeur en évaluant son expression.
+	 * 
+	 * @param valeur
+	 * @return
+	 */
+	private Class<? extends Variable> getType(String val) {
+		// On teste la methode modifierValeur() de toutes les classes héritants
+		// de Variables
+		for (Class<?> c : Package.getPackage("interpreto.Metier.Type").getClass().getClasses())
+			if (c.getSimpleName().equals("Variable")) {
+				try {
+					Variable v = (Variable) c.getConstructors()[0].newInstance("null");
+					if (v.modifierValeur(val))
+						return v.getClass();
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException | SecurityException e) {
+					e.printStackTrace();
+				}
+			}
+
+		return null;
 	}
 
 	public ArrayList<Variable> getVariables() {
@@ -240,17 +305,18 @@ public class AnalyseCode {
 	public int getLigneInterpretee() {
 		return this.ligneInterpretee;
 	}
-	
-	public ArrayList<String> getMotsCles()
-	{
+
+	public ArrayList<String> getMotsCles() {
 		return this.conditions;
 	}
-	
-	public ArrayList<String> getCode()
-	{
+
+	public ArrayList<String> getCode() {
 		return this.code;
 	}
-	
+
+	public boolean getErreur() {
+		return this.erreur;
+	}
 
 	/**
 	 * Retourne la ligne actuellement traitée par l'interpreteur

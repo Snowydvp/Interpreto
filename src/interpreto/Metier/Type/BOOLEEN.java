@@ -14,7 +14,7 @@ public class BOOLEEN extends Variable {
 		if (val.equalsIgnoreCase("vrai") || val.equalsIgnoreCase("faux"))
 		{
 			valeurs.add(val);
-			return true;
+			return super.modifierValeur(val);
 		}
 		return false;
 	}

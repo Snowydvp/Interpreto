@@ -11,6 +11,6 @@ public class CHAINE extends Variable {
 		if(val.charAt(0) != '"' && val.charAt(val.length() - 1) != '"')
 			return false;
 		valeurs.add(val);
-		return true;
+		return super.modifierValeur(val);
 	}
 }

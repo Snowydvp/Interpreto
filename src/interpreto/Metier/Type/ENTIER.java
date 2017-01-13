@@ -16,7 +16,7 @@ public class ENTIER extends Variable {
 		{
 			return false;
 		}
-		return true;
+		return super.modifierValeur(val);
 		
 	}
 

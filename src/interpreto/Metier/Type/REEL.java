@@ -18,7 +18,7 @@ public class REEL extends Variable{
 		{
 			return false;
 		}
-		return true;
+		return super.modifierValeur(val);
 	}
 
 }

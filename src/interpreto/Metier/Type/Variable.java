@@ -21,8 +21,13 @@ public abstract class Variable {
 	protected int taille;
 
 	public Variable(String nom) {
+		this(nom, false);
+	}
+	
+	public Variable(String nom, boolean estConstante)
+	{
 		this.nom = nom;
-		this.estConstante = false; // a travailler plus tard
+		this.estConstante = estConstante;
 
 		this.estTableau = false;
 		valeurs = new ArrayList<String>();
@@ -63,7 +68,10 @@ public abstract class Variable {
 			valeurs.remove(valeurs.size() - 1);
 	}
 
-	public abstract boolean modifierValeur(String val);
+	public boolean modifierValeur(String val)
+	{
+		return !estConstante;
+	}
 
 	public String getType() {
 		
