@@ -1,8 +1,8 @@
 package interpreto.Metier.Type;
 
-public class CHAINE extends Variable {
+public class Chaine extends Variable {
 
-	public CHAINE(String nomVariable) {
+	public Chaine(String nomVariable) {
 		super(nomVariable);
 	}
 
@@ -11,6 +11,6 @@ public class CHAINE extends Variable {
 		if(val.charAt(0) != '"' && val.charAt(val.length() - 1) != '"')
 			return false;
 		valeurs.add(val);
-		return true;
+		return super.modifierValeur(val);
 	}
 }

@@ -1,8 +1,8 @@
 package interpreto.Metier.Type;
 
-public class CARACTERE extends Variable {
+public class Caractere extends Variable {
 
-	public CARACTERE(String nomVariable) {
+	public Caractere(String nomVariable) {
 		super(nomVariable);
 		valeurDefaut = "\0";
 	}
@@ -12,7 +12,7 @@ public class CARACTERE extends Variable {
 		if(val.length() != 3 || val.charAt(0) !='\'' && val.charAt(2) != '\'' )//On compte aussi les simples quote
 			return false;
 		valeurs.add(val);
-		return true;
+		return super.modifierValeur(val);
 	}
 
 }

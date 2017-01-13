@@ -1,9 +1,9 @@
 package interpreto.Metier.Type;
 
 
-public class BOOLEEN extends Variable {
+public class Booleen extends Variable {
 
-	public BOOLEEN(String nomVariable) {
+	public Booleen(String nomVariable) {
 		super(nomVariable);
 		valeurDefaut = "faux";
 		
@@ -14,7 +14,7 @@ public class BOOLEEN extends Variable {
 		if (val.equalsIgnoreCase("vrai") || val.equalsIgnoreCase("faux"))
 		{
 			valeurs.add(val);
-			return true;
+			return super.modifierValeur(val);
 		}
 		return false;
 	}

@@ -1,0 +1,23 @@
+ALGORITHME NomAlgo
+constante:
+	MAXIMELINTOT ◄— 3
+variable:
+	x, y	: entier
+	a:booleen
+	b:entier
+	c:reel
+	d:caractere
+	christophe:chaine
+
+DEBUT
+
+ecrire(c)
+	lire(x)
+	lire(b)
+	lire(y)
+	
+
+
+	
+
+FIN

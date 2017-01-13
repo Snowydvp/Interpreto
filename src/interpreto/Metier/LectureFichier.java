@@ -15,7 +15,10 @@ public class LectureFichier {
 	{
 		code = new ArrayList<>();
 		this.fichier = new File(nomFichier);
-		code = lireFichier();
+		if(nomFichier.endsWith(".algo"))
+			code = lireFichier();
+		else
+			System.out.println("Erreur: le nom de fichier doit avoir pour extension \".algo\".");
 	}
 
 	public ArrayList<String> lireFichier() {

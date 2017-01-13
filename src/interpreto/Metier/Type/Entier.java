@@ -1,8 +1,8 @@
 package interpreto.Metier.Type;
 
-public class ENTIER extends Variable {
+public class Entier extends Variable {
 
-	public ENTIER(String nomVariable) {
+	public Entier(String nomVariable) {
 		super(nomVariable);
 		valeurDefaut = "0";
 	}
@@ -16,7 +16,7 @@ public class ENTIER extends Variable {
 		{
 			return false;
 		}
-		return true;
+		return super.modifierValeur(val);
 		
 	}
 

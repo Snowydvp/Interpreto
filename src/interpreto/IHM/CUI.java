@@ -2,7 +2,6 @@ package interpreto.IHM;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import interpreto.Metier.*;
 import interpreto.Metier.Type.Variable;
 
@@ -23,16 +22,15 @@ public class CUI implements IHM {
 	}
 
 	public void interpreter() {
-		while (analyseCode.possedeSuivant()) {
+		while (analyseCode.possedeSuivant() && !analyseCode.getErreur()) {
+			
 			analyseCode.traiteLigneSuivante();
-
 			if (!lectureEntree) {
 				affichage();
 				scEntree.nextLine();
 			}
 			lectureEntree = false;
 		}
-
 	}
 
 	/**
@@ -64,6 +62,11 @@ public class CUI implements IHM {
 									// été affichées
 		String sortie = "";
 		ArrayList<String> code = analyseCode.getCode();
+		String erreur = "";
+		if(analyseCode.getErreur())
+			erreur = "\u001B[41m";
+			else
+			erreur = "\u001B[42m";
 		/*
 		 * -------------------------- --- Fin Initialisation ---
 		 * --------------------------
@@ -95,23 +98,25 @@ public class CUI implements IHM {
 		int tailleNbLignes = (code.size() / 10);
 		for (int cptLig = 0; cptLig < code.size() && cptLig < 39; cptLig++) {
 			String ligne = code.get(cptLig);
-			//Colorie les fonctions lire et écrire
-			ligne = ligne.replaceAll("lire", "\u001B[1;31m" + "lire" + "\u001B[39m");
-			ligne = ligne.replaceAll("ecrire",  "\u001B[1;36m" + "ecrire" + "\u001B[39m");
-			// Remplacement des tabulations par des espaces pour un affichage correct
+			// Colorie les fonctions lire et écrire
+			ligne = ligne.replaceAll("lire", "\u001B[1;33m" + "lire" + "\u001B[39m");
+			ligne = ligne.replaceAll("ecrire", "\u001B[1;36m" + "ecrire" + "\u001B[39m");
+			// Remplacement des tabulations par des espaces pour un affichage
+			// correct
 			// La largeur des tabulations dépendent des systèmes
 			ligne.replaceAll("\t", "    ");
 			// Definis le nombre de couleurs existant dans la ligne afin
 			// d'éviter les espacements
 			int nbCouleur = ligne.split("\u001B").length - 1;
-			//Surligne la ligne actuellement interpretée
+		
+			// Surligne la ligne actuellement interpretée
 			if (analyseCode.getLigneInterpretee() == cptLig)
-				sortie += "\u001B[42m";
+				sortie += erreur;
 			sortie += '|' + String.format("%" + tailleNbLignes + "d", cptLig) + ' ' + ligne
 			// Detecter le nombre de couleur par ligne pour rajouter de la
 			// longueur
-					+ String.format("%" + (83 - ligne.length() + (nbCouleur * 5.5) - 4) + "s", "| ");
-			
+					+ String.format("%" + (83 - ligne.length() + (nbCouleur * 5.5) - 4) + "s", "|");
+
 			if (analyseCode.getLigneInterpretee() == cptLig)
 				sortie += "\u001B[0m";
 
@@ -182,6 +187,7 @@ public class CUI implements IHM {
 		 */
 
 		System.out.println(sortie);
+		
 	}
 
 	public static void main(String a[]) {
