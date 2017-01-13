@@ -1,14 +1,13 @@
 ALGORITHME NomAlgo
 constante:
-	MAXIMELINTOT ◄— 3
+	MAXIMELINTOT ◄— "pp"
 variable:
 	x, y	: entier
 	a:booleen
 	b:entier
 	c:reel
 	d:caractere
-	christophe:chaine
-
+	christophe:chaine	
 DEBUT
 
 ecrire(c)

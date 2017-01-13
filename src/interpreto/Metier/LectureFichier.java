@@ -6,19 +6,21 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LectureFichier {
-	
+
 	private ArrayList<String> code;
 	File fichier;
-	
-	//A l'appel du constructeur, le fichier est lu et enregistr�
-	public LectureFichier(String nomFichier)
-	{
+
+	// A l'appel du constructeur, le fichier est lu et enregistr�
+	private LectureFichier(String nomFichier) {
 		code = new ArrayList<>();
 		this.fichier = new File(nomFichier);
-		if(nomFichier.endsWith(".algo"))
-			code = lireFichier();
-		else
-			System.out.println("Erreur: le nom de fichier doit avoir pour extension \".algo\".");
+
+	}
+
+	public static LectureFichier creerLectureFichier(String nomFichier) {
+		if (nomFichier.endsWith(".algo")) 
+			return new LectureFichier(nomFichier);
+		return null;
 	}
 
 	public ArrayList<String> lireFichier() {
@@ -33,12 +35,12 @@ public class LectureFichier {
 		}
 		return lignes;
 	}
+
 	/**
 	 * 
 	 * @return Texte du code
 	 */
-	public ArrayList<String> getCode()
-	{
+	public ArrayList<String> getCode() {
 		return this.code;
 	}
 

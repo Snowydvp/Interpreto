@@ -4,11 +4,15 @@ package interpreto.Metier.Type;
 public class Booleen extends Variable {
 
 	public Booleen(String nomVariable) {
-		super(nomVariable);
-		valeurDefaut = "faux";
-		
+		this(nomVariable, false);
 	}
-
+	
+	public Booleen(String nomVariable, boolean estConstant)
+	{
+		super(nomVariable, estConstant);
+		valeurDefaut = "faux";
+	}
+	
 	@Override
 	public boolean modifierValeur(String val) {
 		if (val.equalsIgnoreCase("vrai") || val.equalsIgnoreCase("faux"))
