@@ -1,5 +1,7 @@
 package interpreto.Metier;
 
+import java.util.Date;
+
 public class Fonction {
 	
 	public static Double enReel(String param)
@@ -42,5 +44,9 @@ public class Fonction {
 		return null;
 	}
 	
+	public static String aujourdhui()
+	{
+		return null;
+	}
 
 }
