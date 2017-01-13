@@ -9,8 +9,8 @@ import java.util.Scanner;
 import bsh.EvalError;
 import bsh.Interpreter;
 import interpreto.IHM.IHM;
-import interpreto.Metier.Type.BOOLEEN;
-import interpreto.Metier.Type.CARACTERE;
+import interpreto.Metier.Type.Booleen;
+import interpreto.Metier.Type.Caractere;
 import interpreto.Metier.Type.Variable;
 import sun.reflect.Reflection;
 
@@ -72,33 +72,31 @@ public class AnalyseCode {
 	}
 
 	public void traiterInitialisation() {
-		int i = 1;
+		int i = 0;
 		while (!code.get(i).contains("DEBUT")) {
-			String ligne = code.get(i);
+			String ligne = code.get(++i);
 			
 			
-		 if (ligne.contains("constante:")) {
+		 if (ligne.contains("constante")) {
 			System.out.println("constante detectée");
-			String declaration = code.get(i++);
-			while (!declaration.contains("DEBUT") && !declaration.contains("variable:")) {
+			while (!ligne.contains("DEBUT") && !ligne.contains("variable:")) {
 				/*if (declaration.contains("◄—")) // declarer constante
 					declarerConstante(declaration);*/
-				declaration = code.get(i++);
+				ligne = code.get(++i);
 			}
 			
-		 }else if (ligne.contains("variable:")) {
+		 }
+		 if (ligne.contains("variable:")) {
 				System.out.println("variable detectée");
 				// Un programme ne possédant pas de variable, n'aura pas la
 				// ligne variable:
-				String declaration = code.get(++i);
-				while (!declaration.contains("DEBUT") && !declaration.contains("constante:")) {
-					if (declaration.contains(":"))
-						declarerVariable(declaration);
-					declaration = code.get(i++);
+				while (!ligne.contains("DEBUT") && !ligne.contains("constante:")) {
+					if (ligne.contains(":"))
+						declarerVariable(ligne);
+					ligne = code.get(++i);
 				}
 
 			}
-		 i++;
 		}
 		this.ligneInterpretee = i;
 	}
@@ -199,7 +197,7 @@ public class AnalyseCode {
 				Variable v = rechercherVariable(nomVariable);
 				if (v.modifierValeur(valeur)) {
 					if (v.getType().equals("booleen"))
-						valeur = BOOLEEN.getBoolean(valeur);
+						valeur = Booleen.getBoolean(valeur);
 					try {
 						interpreteur.eval(nomVariable + "=" + valeur);
 					} catch (EvalError e) {
@@ -215,7 +213,7 @@ public class AnalyseCode {
 
 	private boolean declarerVariable(String ligne) {
 		// Dans le cas ou une seul affectation par ligne est autorisée
-		String type = ligne.substring(ligne.indexOf(':') + 1);
+		String type = ligne.substring(ligne.indexOf(':') + 1).trim();
 		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
 		// instancier et enregistrer la variable
 
@@ -224,8 +222,11 @@ public class AnalyseCode {
 			for (Variable varExist : variables)
 				if (varExist.getNom().equals(nom.trim()))
 					return false;
+			char typeChar[] = type.toCharArray();
+			typeChar[0] = Character.toUpperCase(typeChar[0]);
+			type = new String(typeChar);
 			try {
-				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type.trim().toUpperCase())
+				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type)
 						.getConstructors()[0].newInstance(nom.trim()));
 				interpreteur.eval(nom);
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException

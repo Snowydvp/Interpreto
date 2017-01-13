@@ -1,8 +1,8 @@
 package interpreto.Metier.Type;
 
-public class CHAINE extends Variable {
+public class Chaine extends Variable {
 
-	public CHAINE(String nomVariable) {
+	public Chaine(String nomVariable) {
 		super(nomVariable);
 	}
 

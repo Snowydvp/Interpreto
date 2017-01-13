@@ -1,8 +1,8 @@
 package interpreto.Metier.Type;
 
-public class REEL extends Variable{
+public class Reel extends Variable{
 
-	public REEL(String nomVariable) {
+	public Reel(String nomVariable) {
 		super(nomVariable);
 		valeurDefaut = "0.0";
 	}
