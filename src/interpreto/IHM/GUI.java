@@ -2,10 +2,17 @@ package interpreto.IHM;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import interpreto.Metier.AnalyseCode;
 
 public class GUI extends JFrame implements IHM{
 	
+	
+	static GUI guiFrame;
 	JPanel panelMain = new JPanel();
 	JPanel panelCode = new JPanel();
 	JPanel panelData = new JPanel();
@@ -17,12 +24,18 @@ public class GUI extends JFrame implements IHM{
     private DefaultListModel dfmCode = new DefaultListModel();
     private JList            listCode = new JList(dfmCode);
     private DefaultListModel dfmData = new DefaultListModel();
+    private DefaultListModel theNewModel = new DefaultListModel();
     private JList            listData = new JList(dfmData);
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu    menu1   = new JMenu("Fichier");
 	private JMenu    menu2   = new JMenu("Actions");
 	private JMenu    menu3   = new JMenu("Aide");
 	private JMenuItem menu1_item1 = new JMenuItem("Charger un fichier");
+	
+	JFileChooser dialogue = new JFileChooser();
+	
+	private AnalyseCode analyseCode;
+	
 
     public GUI() {
        setTitle("Interpreto"); 
@@ -48,14 +61,20 @@ public class GUI extends JFrame implements IHM{
        menuBar.add(menu3);
        menu1_item1.addActionListener(new ActionListener(){
     	   public void actionPerformed(ActionEvent e){
-    		   JOptionPane.showMessageDialog(null,"Fonction non implémentée.","Erreur",JOptionPane.ERROR_MESSAGE);
+    		   dialogue.showOpenDialog(null);
+    		   JOptionPane.showMessageDialog(null,"Voici le fichier que vous avez ouvert : " + dialogue.getSelectedFile(),"Fichier ouvert",JOptionPane.INFORMATION_MESSAGE);
+    		   analyseCode = new AnalyseCode(dialogue.getSelectedFile().getPath(), guiFrame);
+    		   analyseCode.traiterInitialisation();
+    		   //theNewModel.addElement("test");
+    		   //listCode.setModel(theNewModel);
     	   }
        });
        menu1.add(menu1_item1);
        setJMenuBar(menuBar);
        dfmCode.addElement("Veuillez ouvrir un fichier .algo via le menu Fichier.");
        dfmData.addElement("Aucune données à afficher.");
-       
+       FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier .algo", "algo", "text");
+       dialogue.setFileFilter(filter);
        /*
         * Fin Initialisation
         */
@@ -84,7 +103,7 @@ public class GUI extends JFrame implements IHM{
     }
     
     public static void main(String[] args) {
-		new GUI();
+		guiFrame = new GUI();
 	}
 
 	@Override
