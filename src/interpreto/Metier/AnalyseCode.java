@@ -120,12 +120,13 @@ public class AnalyseCode {
 				if (estFonction(expression))
 				{
 					Object o = traiterFonction(ligne);
-					if (o.getClass() == boolean.class)
-					{
-						erreur = (boolean) o;
-					}
+					System.out.println(o.getClass().getName());
+					if (o.getClass() == Boolean.class)
+						
+						erreur = !(boolean) o;
+
 				}
-					
+				else
 					// Si l'expression ne constitue pas une fonction
 					erreur = !expression.contains("FIN");
 
@@ -161,6 +162,9 @@ public class AnalyseCode {
 			return Fonction.plafond(parametre);
 		case "arrondi":
 			return Fonction.arrondi(parametre);
+		case "aujourd'hui":
+			return Fonction.aujourdhui();
+		
 		
 		}
 
