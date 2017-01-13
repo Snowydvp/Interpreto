@@ -117,8 +117,14 @@ public class AnalyseCode {
 				String expression = scLigne.next();
 
 				if (estFonction(expression))
-					erreur = !traiterFonction(ligne);
-				else
+				{
+					Object o =traiterFonction(ligne);
+					if (o.getClass() == boolean.class)
+					{
+						erreur = (boolean) o;
+					}
+				}
+					
 					// Si l'expression ne constitue pas une fonction
 					erreur = !expression.contains("FIN");
 
@@ -132,7 +138,7 @@ public class AnalyseCode {
 	 * 
 	 * @param expression
 	 */
-	private boolean traiterFonction(String ligne) {
+	private Object traiterFonction(String ligne) {
 		ligne = ligne.trim();
 		String fonction = ligne.substring(0, ligne.indexOf('('));
 		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
@@ -144,6 +150,17 @@ public class AnalyseCode {
 			return ecrire(parametre);
 		case "enRéel":
 			return Fonction.enReel(parametre);
+		case "enEntier":
+			return Fonction.enEntier(parametre);
+		case "ord":
+			return Fonction.ord(parametre);
+		case "plancher":
+			return Fonction.plancher(parametre);
+		case "plafond":
+			return Fonction.plafond(parametre);
+		case "arrondi":
+			return Fonction.arrondi(parametre);
+		
 		}
 
 		return false;
