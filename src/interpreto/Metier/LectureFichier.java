@@ -12,9 +12,8 @@ public class LectureFichier {
 
 	// A l'appel du constructeur, le fichier est lu et enregistr�
 	private LectureFichier(String nomFichier) {
-		code = new ArrayList<>();
 		this.fichier = new File(nomFichier);
-
+		code = lireFichier();
 	}
 
 	public static LectureFichier creerLectureFichier(String nomFichier) {

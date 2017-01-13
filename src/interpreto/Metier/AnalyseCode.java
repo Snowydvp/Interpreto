@@ -22,6 +22,7 @@ public class AnalyseCode {
 
 	public AnalyseCode(LectureFichier lecture, IHM ihm) {
 		this.ihm = ihm;
+		erreur = false;
 		ligneInterpretee = 0;
 		interpreteur = new Interpreter();
 		console = new ArrayList<>();
@@ -118,7 +119,7 @@ public class AnalyseCode {
 
 				if (estFonction(expression))
 				{
-					Object o =traiterFonction(ligne);
+					Object o = traiterFonction(ligne);
 					if (o.getClass() == boolean.class)
 					{
 						erreur = (boolean) o;
