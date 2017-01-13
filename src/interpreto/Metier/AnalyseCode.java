@@ -3,16 +3,12 @@ package interpreto.Metier;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Scanner;
 import bsh.EvalError;
 import bsh.Interpreter;
 import interpreto.IHM.IHM;
-import interpreto.Metier.Type.Booleen;
-import interpreto.Metier.Type.Caractere;
-import interpreto.Metier.Type.Variable;
-import sun.reflect.Reflection;
+import interpreto.Metier.Type.*;
 
 public class AnalyseCode {
 
@@ -24,12 +20,12 @@ public class AnalyseCode {
 	// définis s'il existe une erreur sur la ligne actuellement interpretée
 	private boolean erreur;
 
-	public AnalyseCode(String fichier, IHM ihm) {
+	public AnalyseCode(LectureFichier lecture, IHM ihm) {
 		this.ihm = ihm;
 		ligneInterpretee = 0;
 		interpreteur = new Interpreter();
 		console = new ArrayList<>();
-		code = new LectureFichier(fichier).getCode();
+		code = lecture.getCode();
 		fonctions = construireListeMots("src/interpreto/Metier/fonctions.txt");
 		conditions = construireListeMots("src/interpreto/Metier/conditions.txt");
 		variables = new ArrayList<>();
@@ -72,33 +68,35 @@ public class AnalyseCode {
 	}
 
 	public void traiterInitialisation() {
-		int i = 0;
-		while (!code.get(i).contains("DEBUT")) {
-			String ligne = code.get(++i);
-			
-			
-		 if (ligne.contains("constante")) {
-			System.out.println("constante detectée");
-			while (!ligne.contains("DEBUT") && !ligne.contains("variable:")) {
-				/*if (declaration.contains("◄—")) // declarer constante
-					declarerConstante(declaration);*/
-				ligne = code.get(++i);
-			}
-			
-		 }
-		 if (ligne.contains("variable:")) {
-				System.out.println("variable detectée");
-				// Un programme ne possédant pas de variable, n'aura pas la
-				// ligne variable:
-				while (!ligne.contains("DEBUT") && !ligne.contains("constante:")) {
-					if (ligne.contains(":"))
-						declarerVariable(ligne);
-					ligne = code.get(++i);
+		ligneInterpretee = 1;
+		String ligne = "";
+		while (!code.get(ligneInterpretee).contains("DEBUT") && !erreur) {
+			ligne = code.get(ligneInterpretee);
+
+			if (ligne.contains("constante")) {
+				ligne = code.get(++ligneInterpretee);
+				while (!ligne.contains("DEBUT") && !ligne.contains("variable:") && !erreur) {
+					if (ligne.contains("◄—")) // declarer constante
+						if (!declarerConstante(ligne))
+							erreur = true;
+						else
+							ligne = code.get(++ligneInterpretee);
 				}
 
-			}
+			} else if (ligne.contains("variable:")) {
+				System.out.println("detect variable");
+				ligne = code.get(++ligneInterpretee);
+				while (!ligne.contains("DEBUT") && !erreur) {
+					if (ligne.contains(":"))
+						if (!declarerVariable(ligne))
+							erreur = true;
+						else
+							ligne = code.get(++ligneInterpretee);
+				}
+
+			} else
+				ligneInterpretee++;
 		}
-		this.ligneInterpretee = i;
 	}
 
 	/**
@@ -107,6 +105,7 @@ public class AnalyseCode {
 	 * @param motCle
 	 */
 	private void traiterCode(int ligneInterpretee) {
+
 		String ligne = code.get(ligneInterpretee);
 		Scanner scLigne = new Scanner(ligne);
 
@@ -134,44 +133,53 @@ public class AnalyseCode {
 	 * @param expression
 	 */
 	private boolean traiterFonction(String ligne) {
-		// Dans le cas ou une seule expression est autorise par ligne
 		ligne = ligne.trim();
-
+		String fonction = ligne.substring(0, ligne.indexOf('('));
 		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
-		if (ligne.contains("lire")) {
-			Variable var = rechercherVariable(parametre);
-			return var != null && lire(var);
-
-		} else if (ligne.contains("ecrire")) {
-			String strSortie = "";
-			String[] chaines = parametre.split("&"); // Gère la concaténation
-			for (String chaine : chaines) {
-				// Cas où ce qui est à afficher
-				// constitue une chaine de
-				// caractères
-
-				if (chaine.lastIndexOf('"') != chaine.indexOf('"')) // On
-																	// vérifie
-																	// si deux
-																	// guillements
-																	// existent
-					strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
-				else// Cas où ce qui est à afficher est une variable
-				{
-					Variable var = rechercherVariable(chaine.trim());
-					if (var == null)
-						return false;
-					strSortie += var.getValeurActuelle();
-				}
-			}
-			console.add(strSortie);
+		switch(fonction)
+		{
+		case "lire":
+			return lire(parametre);
+		case "ecrire":
+			return ecrire(parametre);
+		case "enRéel":
+			return Fonction.enReel(parametre);
 		}
 
+		return false;
+	}
+
+	private boolean ecrire(String parametre) {
+		String strSortie = "";
+		String[] chaines = parametre.split("&"); // Gère la concaténation
+		for (String chaine : chaines) {
+			// Cas où ce qui est à afficher
+			// constitue une chaine de
+			// caractères
+
+			if (chaine.lastIndexOf('"') != chaine.indexOf('"')) // On
+																// vérifie
+																// si deux
+																// guillements
+																// existent
+				strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
+			else// Cas où ce qui est à afficher est une variable
+			{
+				Variable var = rechercherVariable(chaine.trim());
+				if (var == null)
+					return false;
+				strSortie += var.getValeurActuelle();
+			}
+		}
+		console.add(strSortie);
 		return true;
 	}
 
-	private boolean lire(Variable var) {
-		boolean erreurEntree = false;
+	private boolean lire(String parametre) {
+		Variable var = rechercherVariable(parametre);
+		if (var == null)
+			return false;
+		boolean entreeCorrecte = true;
 		String entree = ihm.getEntree();
 		if (var.getType().equals("chaine"))
 			entree = '"' + entree + '"';
@@ -180,12 +188,12 @@ public class AnalyseCode {
 
 		if (!var.modifierValeur(entree))
 			// Gerer les exceptions autrement
-			erreurEntree = true;
+			entreeCorrecte = false;
 
 		// On laisse ce qu'as rentré l'utilisateur dans la console
 		console.add(entree);
 
-		return erreurEntree;
+		return entreeCorrecte;
 	}
 
 	private boolean affecterVariable(String ligne) {
@@ -215,7 +223,6 @@ public class AnalyseCode {
 		// Dans le cas ou une seul affectation par ligne est autorisée
 		String type = ligne.substring(ligne.indexOf(':') + 1).trim();
 		String nomsVariable[] = ligne.substring(0, ligne.indexOf(':')).split(",");
-		// instancier et enregistrer la variable
 
 		for (String nom : nomsVariable) {
 			// verification de la non-existence de la variable
@@ -226,16 +233,14 @@ public class AnalyseCode {
 			typeChar[0] = Character.toUpperCase(typeChar[0]);
 			type = new String(typeChar);
 			try {
-				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type)
-						.getConstructors()[0].newInstance(nom.trim()));
+				// Instancie et enregistre la variable
+				variables.add((Variable) Class.forName("interpreto.Metier.Type." + type).getConstructors()[0]
+						.newInstance(nom.trim()));
 				interpreteur.eval(nom);
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException
-					| InvocationTargetException | SecurityException | EvalError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -256,11 +261,10 @@ public class AnalyseCode {
 			variables.add((Variable) getType(valeur).getConstructors()[1].newInstance(nomVariable, true));
 			interpreteur.equals(nomVariable);
 			return true;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| SecurityException e) {
-			e.printStackTrace();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | NullPointerException
+				| InvocationTargetException | SecurityException e) {
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -272,17 +276,17 @@ public class AnalyseCode {
 	private Class<? extends Variable> getType(String val) {
 		// On teste la methode modifierValeur() de toutes les classes héritants
 		// de Variables
-		for (Class<?> c : Package.getPackage("interpreto.Metier.Type").getClass().getClasses())
-			if (c.getSimpleName().equals("Variable")) {
-				try {
-					Variable v = (Variable) c.getConstructors()[0].newInstance("null");
-					if (v.modifierValeur(val))
-						return v.getClass();
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException | SecurityException e) {
-					e.printStackTrace();
-				}
-			}
+		Variable v;
+		if ((v = new Booleen("")).modifierValeur(val))
+			return v.getClass();
+		if ((v = new Caractere("")).modifierValeur(val))
+			return v.getClass();
+		if ((v = new Chaine("")).modifierValeur(val))
+			return v.getClass();
+		if ((v = new Entier("")).modifierValeur(val))
+			return v.getClass();
+		if ((v = new Reel("")).modifierValeur(val))
+			return v.getClass();
 
 		return null;
 	}
