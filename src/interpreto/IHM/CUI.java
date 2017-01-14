@@ -5,6 +5,12 @@ import java.util.Scanner;
 import interpreto.Metier.*;
 import interpreto.Metier.Type.Variable;
 
+/**
+ * Classe CUI permettant la construction de l'interface console
+ * 
+ * @author Equipe 7
+ * @version 14/01/17
+ */
 public class CUI implements IHM {
 
 	private AnalyseCode analyseCode;
@@ -12,33 +18,43 @@ public class CUI implements IHM {
 	private Scanner scEntree;
 	private boolean lectureEntree;
 
+	/**
+	 * Constructeur permettant l'analyse du fichier ainsi que son affichage
+	 * 
+	 * @param nomFichier
+	 *            chemin d'accée a la lecture du fichier
+	 */
 	public CUI(String nomFichier) {
-		scEntree = new Scanner(System.in);
-		traceVariables = new ArrayList<>();
+		this.scEntree = new Scanner(System.in);
+		this.traceVariables = new ArrayList<>();
 		LectureFichier lecture = LectureFichier.creerLectureFichier(nomFichier);
 		if (lecture != null) {
-			analyseCode = new AnalyseCode(lecture, this);
-			affichVariablesTrace();
-			interpreter();
+			this.analyseCode = new AnalyseCode(lecture, this);
+			this.affichVariablesTrace();
+			this.interpreter();
 		}
 
 	}
 
+	/**
+	 * Methode permettant d'interpreter le code et de savoir si celui si est
+	 * fini
+	 */
 	public void interpreter() {
 		while (analyseCode.possedeSuivant() && !analyseCode.getErreur()) {
 
 			analyseCode.traiteLigneSuivante();
-			if (!lectureEntree) {
-				affichage();
-				scEntree.nextLine();
+			if (!this.lectureEntree) {
+				this.affichage();
+				this.scEntree.nextLine();
 			}
-			lectureEntree = false;
+			this.lectureEntree = false;
 		}
 	}
 
 	/**
-	 * Affiche la liste des variables et demande à l'utilisateur celles qui veut
-	 * suivre
+	 * Affiche la liste des variables et demande à l'utilisateur celles qu'il
+	 * veut suivre
 	 */
 	private void affichVariablesTrace() {
 		analyseCode.traiterInitialisation();
@@ -54,18 +70,22 @@ public class CUI implements IHM {
 			for (String strVar : entreeVariables.split(",")) {
 				Variable var = analyseCode.rechercherVariable(strVar.trim());
 				if (var != null)
-					traceVariables.add(var);
+					this.traceVariables.add(var);
 			}
 		} else {
-			affichage();
+			this.affichage();
 			System.out.println("Erreur à l'initialisation");
 		}
 	}
 
+	/**
+	 * Methode permettant l'affichage dans la console
+	 */
 	private void affichage() {
 		/*
-		 * -------------------------- ----- Initialisation -----
-		 * --------------------------
+		 * ---------------------------------------------------------
+		 * ------------------- Initialisation ----------------------
+		 * ---------------------------------------------------------
 		 */
 		boolean endData = false; // Permet de savoir si toutes les données ont
 									// été affichées
@@ -77,14 +97,15 @@ public class CUI implements IHM {
 		else
 			erreur = "\u001B[42m";
 		/*
-		 * -------------------------- --- Fin Initialisation ---
-		 * --------------------------
+		 * ---------------------------------------------------------
+		 * ----------------- Fin Initialisation --------------------
+		 * ---------------------------------------------------------
 		 */
 
 		/*
-		 * ------------------------------------------------- ----- Affichage des
-		 * entetes Code et Données -----
-		 * -------------------------------------------------
+		 * ---------------------------------------------------------
+		 * ------------- Affichage des entetes Code et Données -----
+		 * ---------------------------------------------------------
 		 */
 		sortie += "¨¨¨¨¨¨¨¨¨¨¨" + String.format("%89s", "¨¨¨¨¨¨¨¨¨¨¨\n");
 		sortie += "|  CODE   |" + String.format("%89s", "| DONNEES |\n");
@@ -94,14 +115,15 @@ public class CUI implements IHM {
 			else
 				sortie += "¨"; // Bordure de début du code et données
 		/*
-		 * ------------------------------------------------- --- Fin Affichage
-		 * des entetes Code et Données ---
-		 * -------------------------------------------------
+		 * ---------------------------------------------------------
+		 * ------------ Fin Affichage des entetes Code et Données --
+		 * ---------------------------------------------------------
 		 */
 
 		/*
-		 * --------------------------------- ------- Affichage du Code -------
-		 * ---------------------------------
+		 * ---------------------------------------------------------
+		 * ------------------ Affichage du Code --------------------
+		 * ---------------------------------------------------------
 		 */
 		sortie += "\n";
 		int tailleNbLignes = (code.size() / 10);
@@ -131,8 +153,9 @@ public class CUI implements IHM {
 				sortie += "\u001B[0m";
 
 			/*
-			 * --------------------------------------- ------- Affichage des
-			 * variables ------- ---------------------------------------
+			 * ---------------------------------------------------------
+			 * --------------- Affichage des variables -----------------
+			 * ---------------------------------------------------------
 			 */
 			if (cptLig == 0)
 				sortie += "|    NOM     |   TYPE     |   VALEUR               |\n";
@@ -168,14 +191,15 @@ public class CUI implements IHM {
 		for (int i = 0; i <= 86; i++)
 			sortie += "¨"; // Bordure de fin de code
 		/*
-		 * ------------------------------------------------ ----- Fin Affichage
-		 * du Code et des Données -----
-		 * ------------------------------------------------
+		 * ---------------------------------------------------------
+		 * ------------ Fin Affichage du Code et des Données -------
+		 * ---------------------------------------------------------
 		 */
 
 		/*
-		 * --------------------------------------- ------- Affichage de la
-		 * Console ------- ---------------------------------------
+		 * ---------------------------------------------------------
+		 * ---------------- Affichage de la Console ----------------
+		 * ---------------------------------------------------------
 		 */
 		sortie += "\n¨¨¨¨¨¨¨¨¨¨¨\n";
 		sortie += "| CONSOLE |\n";
@@ -183,35 +207,28 @@ public class CUI implements IHM {
 			sortie += "¨";
 		sortie += "\n";
 
-		for (int cptLig = 0; cptLig < analyseCode.getConsole().size(); cptLig++) // Peut
-																					// afficher
-																					// jusqu'à
-																					// 999
-																					// lignes.
+		for (int cptLig = 0; cptLig < analyseCode.getConsole().size(); cptLig++)
+			// Peut afficher jusqu'à 999 lignes.
 			sortie += '|' + analyseCode.getConsole().get(cptLig)
 					+ String.format("%" + (87 - analyseCode.getConsole().get(cptLig).length()) + "s", "|\n");
-		// for (int i = 0; i <= 86; i++) sortie += "¨";
 		/*
-		 * --------------------------------------- ----- Fin Affichage de la
-		 * Console ----- ---------------------------------------
+		 * ---------------------------------------------------------
+		 * -------------- Fin Affichage de la Console --------------
+		 * ---------------------------------------------------------
 		 */
 
 		System.out.println(sortie);
 
 	}
 
-	public static void main(String a[]) {
-		CUI cui = new CUI(a[0]);
-	}
-
 	/**
-	 * Cette methode sert à lire les variables via l'interface d'entrée Retourne
-	 * le texte inséré dans la console
+	 * Cette methode sert à lire les variables via l'interface d'entrée
+	 * 
+	 * @return le texte inséré dans la console
 	 */
-	@Override
 	public String getEntree() {
-		affichage();
-		lectureEntree = true;
-		return scEntree.nextLine();
+		this.affichage();
+		this.lectureEntree = true;
+		return this.scEntree.nextLine();
 	}
 }

@@ -2,14 +2,27 @@ package interpreto;
 
 import interpreto.IHM.*;
 
+/**
+ * Classe Controleur permettant de faire le lien entre Metier et IHM
+ * 
+ * @author Equipe 7
+ * @version 14/01/17
+ */
 public class Controleur {
-	public Controleur(){
-		//new CUI();
-		new GUI();
-	}	
-	
-	public static void main (String args[])
-	{
+	/**
+	 * Constructeur par defaut
+	 */
+	public Controleur() {
+		// new GUI();
+		new CUI("./Codes/codeTest.algo");
+	}
+
+	/**
+	 * Methode permettant le lancement du programme
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[]) {
 		new Controleur();
 	}
 }

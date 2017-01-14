@@ -4,6 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+/**
+ * Classe GUI permettant la construction de l'interface utilisateur
+ * 
+ * @author Equipe 7
+ * @version 14/01/17
+ */
 public class GUI extends JFrame implements IHM{
 	
 	JPanel panelMain = new JPanel();
@@ -82,12 +88,12 @@ public class GUI extends JFrame implements IHM{
                 
        setVisible(true);
     }
-    
-    public static void main(String[] args) {
-		new GUI();
-	}
 
-	@Override
+	/**
+	 * Cette methode sert à lire les variables via l'interface d'entrée
+	 * 
+	 * @return le texte inséré dans la console
+	 */
 	public String getEntree() {
 		// TODO Auto-generated method stub
 		return null;
