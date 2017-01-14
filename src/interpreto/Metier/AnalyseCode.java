@@ -227,7 +227,7 @@ public class AnalyseCode {
 				Variable v = rechercherVariable(nomVariable);
 				if (v.modifierValeur(valeur)) {
 					if (v.getType().equals("booleen"))
-						valeur = Booleen.getBoolean(valeur);
+						valeur = Booleen.getBooleen(valeur);
 					try {
 						interpreteur.eval(nomVariable + "=" + valeur);
 					} catch (EvalError e) {
