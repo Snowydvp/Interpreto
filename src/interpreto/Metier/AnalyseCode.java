@@ -10,6 +10,12 @@ import bsh.Interpreter;
 import interpreto.IHM.IHM;
 import interpreto.Metier.Type.*;
 
+/**
+ * Classe permettant l'analyse du speudocode
+ * 
+ * @author Equipe 7
+ * @version 14/01/17
+ */
 public class AnalyseCode {
 
 	private ArrayList<String> code, fonctions, conditions, console;
@@ -20,6 +26,14 @@ public class AnalyseCode {
 	// définis s'il existe une erreur sur la ligne actuellement interpretée
 	private boolean erreur;
 
+	/**
+	 * Constructeur permettant l'analyse du speudoCode
+	 * 
+	 * @param lecture
+	 *            qui est une sauvegarde du fichier .algo
+	 * @param ihm
+	 *            qui est l'interface
+	 */
 	public AnalyseCode(LectureFichier lecture, IHM ihm) {
 		this.ihm = ihm;
 		erreur = false;
@@ -36,7 +50,9 @@ public class AnalyseCode {
 	/**
 	 * Construit la liste de toutes les fonctions a partir du fichier texte
 	 * 
-	 * @return
+	 * @param nomFichier
+	 *            chemin d'accee des fonction
+	 * @return une ArrayList de toute les fonctions traité par notre programme
 	 */
 	private ArrayList<String> construireListeMots(String nomFichier) {
 		ArrayList<String> motsCles = new ArrayList<>();
@@ -46,7 +62,6 @@ public class AnalyseCode {
 			while (scFichier.hasNextLine())
 				motsCles.add(scFichier.nextLine());
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			scFichier.close();
@@ -58,6 +73,9 @@ public class AnalyseCode {
 	/**
 	 * Cette méthode retourne le code déjà analysé et modifié pour l'affichage
 	 * 
+	 * @param expression
+	 *            permet de savoir si l'expression passer en parametre est une
+	 *            fonction
 	 * @return texte du code analysé
 	 */
 
@@ -68,6 +86,10 @@ public class AnalyseCode {
 		return false;
 	}
 
+	/**
+	 * Methode permettant de traiter toute la partie initialisation des
+	 * Variables
+	 */
 	public void traiterInitialisation() {
 		ligneInterpretee = 1;
 		String ligne = "";
@@ -103,7 +125,8 @@ public class AnalyseCode {
 	/**
 	 * Interpretation du code dans son integralite
 	 * 
-	 * @param motCle
+	 * @param ligneInterpretee
+	 *            permet de savoir le nombre de ligne deja interprete
 	 */
 	private void traiterCode(int ligneInterpretee) {
 
@@ -117,16 +140,14 @@ public class AnalyseCode {
 			while (scLigne.hasNext()) {
 				String expression = scLigne.next();
 
-				if (estFonction(expression))
-				{
+				if (estFonction(expression)) {
 					Object o = traiterFonction(ligne);
 					System.out.println(o.getClass().getName());
 					if (o.getClass() == Boolean.class)
-						
+
 						erreur = !(boolean) o;
 
-				}
-				else
+				} else
 					// Si l'expression ne constitue pas une fonction
 					erreur = !expression.contains("FIN");
 
@@ -138,14 +159,15 @@ public class AnalyseCode {
 	/**
 	 * Methode recursive qui interprète toutes les fonctions
 	 * 
-	 * @param expression
+	 * @param ligne
+	 *            ligne actuelle en cours de traitement
+	 * @return un objet de type String, Double, Integer,...
 	 */
 	private Object traiterFonction(String ligne) {
 		ligne = ligne.trim();
 		String fonction = ligne.substring(0, ligne.indexOf('('));
 		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
-		switch(fonction)
-		{
+		switch (fonction) {
 		case "lire":
 			return lire(parametre);
 		case "ecrire":
@@ -164,13 +186,20 @@ public class AnalyseCode {
 			return Fonction.arrondi(parametre);
 		case "aujourd'hui":
 			return Fonction.aujourdhui();
-		
-		
+
 		}
 
 		return false;
 	}
 
+	/**
+	 * Methode permettant la gestion de la fonction ecrire
+	 * 
+	 * @param parametre
+	 *            parametre contenu dans la fonction ecrire analyser dans le
+	 *            speudo code
+	 * @return un boolean si l'analyse du ecrire a fonctionner
+	 */
 	private boolean ecrire(String parametre) {
 		String strSortie = "";
 		String[] chaines = parametre.split("&"); // Gère la concaténation
@@ -179,11 +208,8 @@ public class AnalyseCode {
 			// constitue une chaine de
 			// caractères
 
-			if (chaine.lastIndexOf('"') != chaine.indexOf('"')) // On
-																// vérifie
-																// si deux
-																// guillements
-																// existent
+			if (chaine.lastIndexOf('"') != chaine.indexOf('"'))
+				// On vérifie si deux guillements existent
 				strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
 			else// Cas où ce qui est à afficher est une variable
 			{
@@ -197,6 +223,14 @@ public class AnalyseCode {
 		return true;
 	}
 
+	/**
+	 * Methode permettant la gestion de la fonction lire
+	 * 
+	 * @param parametre
+	 *            parametre contenu dans la fonction lire analyser dans le
+	 *            speudo code
+	 * @return un boolean si l'analyse du lire a fonctionner
+	 */
 	private boolean lire(String parametre) {
 		Variable var = rechercherVariable(parametre);
 		if (var == null)
@@ -218,6 +252,13 @@ public class AnalyseCode {
 		return entreeCorrecte;
 	}
 
+	/**
+	 * Methode permettant l'affectation d'une valeur dans une Variable
+	 * 
+	 * @param ligne
+	 *            ligne en cours d'analyse
+	 * @return un boolean si l'affectation a reussi
+	 */
 	private boolean affecterVariable(String ligne) {
 		String nomVariable = ligne.substring(0, ligne.indexOf("◄—")).trim();
 		String valeur = ligne.substring(ligne.indexOf("◄—") + 2).trim();
@@ -231,7 +272,6 @@ public class AnalyseCode {
 					try {
 						interpreteur.eval(nomVariable + "=" + valeur);
 					} catch (EvalError e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -241,6 +281,13 @@ public class AnalyseCode {
 		return false;
 	}
 
+	/**
+	 * Methode permettant la declaration des Variables
+	 * 
+	 * @param ligne
+	 *            ligne en cours d'analyse
+	 * @return un boolean si la declaration a reussi
+	 */
 	private boolean declarerVariable(String ligne) {
 		// Dans le cas ou une seul affectation par ligne est autorisée
 		String type = ligne.substring(ligne.indexOf(':') + 1).trim();
@@ -292,8 +339,8 @@ public class AnalyseCode {
 	/**
 	 * Cette classe renvoie le type d'une valeur en évaluant son expression.
 	 * 
-	 * @param valeur
-	 * @return
+	 * @param val
+	 * @return le type de la valeur
 	 */
 	private Class<? extends Variable> getType(String val) {
 		// On teste la methode modifierValeur() de toutes les classes héritants
@@ -313,40 +360,82 @@ public class AnalyseCode {
 		return null;
 	}
 
+	/**
+	 * Accesseur de Variable
+	 * 
+	 * @return l'ArrayList de variables
+	 */
 	public ArrayList<Variable> getVariables() {
 		return this.variables;
 	}
 
+	/**
+	 * Accesseur de console
+	 * 
+	 * @return L'arrayList de console
+	 */
 	public ArrayList<String> getConsole() {
 		return this.console;
 	}
 
+	/**
+	 * Methode permettant de savoir si il reste des lignes a analyser
+	 * 
+	 * @return un boolean
+	 */
 	public boolean possedeSuivant() {
 		return !code.get(this.ligneInterpretee).contains("FIN");
 	}
 
+	/**
+	 * Methode permettant de traiter la ligne suivante
+	 */
 	public void traiteLigneSuivante() {
 		traiterCode(++ligneInterpretee);
 	}
 
+	/**
+	 * Accesseur permettant de connaitre a quel ligne nous en sommes
+	 * 
+	 * @return le numero de la ligne a laquelle nous sommes
+	 */
 	public int getLigneInterpretee() {
 		return this.ligneInterpretee;
 	}
 
+	/**
+	 * Accesseur de conditions
+	 * 
+	 * @return l'ArrayList de conditions
+	 */
 	public ArrayList<String> getMotsCles() {
 		return this.conditions;
 	}
 
+	/**
+	 * Accesseur de code
+	 * 
+	 * @return l'ArrayList de code
+	 */
 	public ArrayList<String> getCode() {
 		return this.code;
 	}
 
+	/**
+	 * Accesseur de erreur
+	 * 
+	 * @return la valeur de erreur
+	 */
 	public boolean getErreur() {
 		return this.erreur;
 	}
 
 	/**
-	 * Retourne la ligne actuellement traitée par l'interpreteur
+	 * Methode permettant la recherche d'une Variable par son nom
+	 * 
+	 * @param nom
+	 *            nom de la variable
+	 * @return la ligne actuellement traitée par l'interpreteur
 	 */
 	public Variable rechercherVariable(String nom) {
 		for (Variable var : variables)
