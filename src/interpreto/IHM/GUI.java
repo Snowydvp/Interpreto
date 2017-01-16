@@ -2,7 +2,10 @@ package interpreto.IHM;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
+import interpreto.Metier.*;
+import interpreto.Metier.Type.Variable;
 
 /**
  * Classe GUI permettant la construction de l'interface utilisateur
@@ -15,20 +18,40 @@ public class GUI extends JFrame implements IHM{
 	JPanel panelMain = new JPanel();
 	JPanel panelCode = new JPanel();
 	JPanel panelData = new JPanel();
+	JPanel panelBottom = new JPanel();
 	JPanel panelConsole = new JPanel();
+	JPanel panelButtons = new JPanel();
 	JLabel labelCode = new JLabel("Code");
     JLabel labelData = new JLabel("Données");
     JLabel labelConsole = new JLabel("Console");
+    JLabel labelButtons = new JLabel("Actions");
+    
+    JButton buttonNext = new JButton("Suivant");
+    JButton buttonPrevious = new JButton("Précédent");
+    JButton buttonStop = new JButton("Arrêt");
+    JButton buttonStartAuto = new JButton("Début Auto");
+    JButton buttonStartManu = new JButton("Début Manuel");
     
     private DefaultListModel dfmCode = new DefaultListModel();
     private JList            listCode = new JList(dfmCode);
     private DefaultListModel dfmData = new DefaultListModel();
+    private DefaultListModel theNewModel;
     private JList            listData = new JList(dfmData);
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu    menu1   = new JMenu("Fichier");
-	private JMenu    menu2   = new JMenu("Actions");
-	private JMenu    menu3   = new JMenu("Aide");
+	private JMenu    menu2   = new JMenu("Edition");
+	private JMenu    menu3   = new JMenu("A propos");
 	private JMenuItem menu1_item1 = new JMenuItem("Charger un fichier");
+	
+	static GUI guiFrame;
+	
+	JFileChooser dialogue = new JFileChooser();
+	
+	private AnalyseCode analyseCode;
+	
+	private ArrayList<String> traceVariables = new ArrayList<>();
+	
+	private JFrame demanderTraceVariable = new JFrame();
 
     public GUI() {
        setTitle("Interpreto"); 
@@ -45,16 +68,51 @@ public class GUI extends JFrame implements IHM{
        /*
         * Initialisation
         */
+       demanderTraceVariable.setTitle("Choisir les variables à afficher");
+       demanderTraceVariable.setSize(400,400);
+       
+       
        panelMain.setLayout(new BorderLayout());
        panelCode.setLayout(new BorderLayout());
        panelData.setLayout(new BorderLayout());
+       panelBottom.setLayout(new BorderLayout());
+       panelButtons.setLayout(new GridLayout(3,2));
        panelConsole.setLayout(new BorderLayout());
        menuBar.add(menu1);
        menuBar.add(menu2);
        menuBar.add(menu3);
        menu1_item1.addActionListener(new ActionListener(){
+    	   
     	   public void actionPerformed(ActionEvent e){
-    		   JOptionPane.showMessageDialog(null,"Fonction non implémentée.","Erreur",JOptionPane.ERROR_MESSAGE);
+    		   dialogue.showOpenDialog(null);
+    		   LectureFichier lecture = LectureFichier.creerLectureFichier(dialogue.getSelectedFile().getPath());
+    		   if(lecture != null){
+    			   analyseCode = new AnalyseCode(lecture, guiFrame);
+    			   analyseCode.traiterInitialisation();
+    			   ArrayList<String> code = analyseCode.getCode();
+    			   theNewModel = new DefaultListModel();
+    			   for(String s : code)
+    				   theNewModel.addElement(s.replaceAll("\t", "    "));
+    			   listCode.setModel(theNewModel);
+    			   if (!analyseCode.getErreur()) {
+	    			   demanderTraceVariable.setLayout(new GridLayout(analyseCode.getVariables().size(),1));
+	    			   for(Variable v : analyseCode.getVariables()){
+	    				   demanderTraceVariable.add(new JLabel(v.getNom()));
+	    				   
+	    			   }System.out.println(analyseCode.getVariables().size());
+	    			   
+	    			   demanderTraceVariable.add(new JButton("Fermer"));
+	    				   
+	    			   
+	    			   demanderTraceVariable.setVisible(true);
+    			   }else{
+    				   JOptionPane.showMessageDialog(null,"Erreur lors de l'initialisation. Vérifiez l'authenticité de votre fichier"+analyseCode.getLigneInterpretee()+" .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
+    			   }
+    			   //JOptionPane.showMessageDialog(null,"Fichier chargé avec succès.","Succès",JOptionPane.INFORMATION_MESSAGE);
+    		   }else{
+    			   JOptionPane.showMessageDialog(null,"Erreur lors du chargement du fichier. Celui-ci doit être du au format .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
+    		   }
+    		   //JOptionPane.showMessageDialog(null,"Fonction non implémentée.","Erreur",JOptionPane.ERROR_MESSAGE);
     	   }
        });
        menu1.add(menu1_item1);
@@ -70,7 +128,20 @@ public class GUI extends JFrame implements IHM{
        panelCode.add(listCode, BorderLayout.CENTER);
        panelData.add(labelData, BorderLayout.NORTH);
        panelData.add(listData, BorderLayout.CENTER);
+       
+       panelButtons.add(labelButtons);
+       panelButtons.add(buttonStop);
+       
+       panelButtons.add(buttonNext);
+       panelButtons.add(buttonPrevious);
+       
+       panelButtons.add(buttonStartAuto);
+       panelButtons.add(buttonStartManu);
+       
+       
        panelConsole.add(labelConsole, BorderLayout.NORTH);
+       
+       
        JTextArea textArea = new JTextArea("");
        textArea.setFont(new Font("Sans-Serif", 0, 16));
        textArea.setLineWrap(true);
@@ -82,12 +153,17 @@ public class GUI extends JFrame implements IHM{
        
        panelMain.add(panelCode, BorderLayout.CENTER);
        panelMain.add(panelData, BorderLayout.EAST);
-       panelMain.add(panelConsole, BorderLayout.SOUTH);
+       panelBottom.add(panelConsole,BorderLayout.CENTER);
+       panelBottom.add(panelButtons,BorderLayout.EAST);
+       panelMain.add(panelBottom, BorderLayout.SOUTH);
        add(panelMain);
-       
                 
        setVisible(true);
-    }
+    }    
+    
+    public static void main(String[] args) {
+		guiFrame = new GUI();
+	}
 
 	/**
 	 * Cette methode sert à lire les variables via l'interface d'entrée
