@@ -14,8 +14,9 @@ public class Entier extends Variable {
 	 * @param nomVariable
 	 *            nom que prendra l'Entier
 	 */
+
 	public Entier(String nomVariable) {
-		this(nomVariable, false, "");
+		super(nomVariable,false, "0");
 	}
 
 	/**
@@ -28,7 +29,6 @@ public class Entier extends Variable {
 	 */
 	public Entier(String nomVariable, boolean estConstant, String valeur) {
 		super(nomVariable, estConstant, valeur);
-		super.valeurDefaut = "0";
 	}
 
 	/**

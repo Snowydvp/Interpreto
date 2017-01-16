@@ -14,7 +14,7 @@ public abstract class Variable {
 	protected String nom;
 	protected ArrayList<String> valeurs;
 	protected boolean estTableau, estConstante;
-	protected String valeurDefaut = "null";
+	static String valeurDefaut;
 	/**
 	 * Cette variable est utilise uniquement lorsque la variable est un tableau
 	 **/
@@ -27,7 +27,8 @@ public abstract class Variable {
 	 *            nom que prendra la Variable
 	 */
 	public Variable(String nom) {
-		this(nom, false, "");
+		this(nom, false, valeurDefaut);
+		
 	}
 
 	/**

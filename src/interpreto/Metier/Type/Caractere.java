@@ -15,7 +15,7 @@ public class Caractere extends Variable {
 	 *            nom que prendra le Caractere
 	 */
 	public Caractere(String nomVariable) {
-		this(nomVariable, false, "");
+		super(nomVariable, false, "'\0'");
 	}
 
 	/**
@@ -28,7 +28,6 @@ public class Caractere extends Variable {
 	 */
 	public Caractere(String nomVariable, boolean estConstant, String valeur) {
 		super(nomVariable, estConstant, valeur);
-		super.valeurDefaut = "\0";
 	}
 
 	/**

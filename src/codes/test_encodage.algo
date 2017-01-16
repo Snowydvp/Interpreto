@@ -1,0 +1,11 @@
+﻿ALGORTIHME NomAlgo
+variable:
+   x       : entier 
+   
+DEBUT
+   x    ◄— 5		
+   
+   ecrire ( x )
+   
+FIN  
+ 

@@ -14,7 +14,7 @@ public class Controleur {
 	 */
 	public Controleur() {
 		// new GUI();
-		new CUI("./Codes/codeTest.algo");
+		new CUI("src/codes/test_encodage.algo");
 	}
 
 	/**

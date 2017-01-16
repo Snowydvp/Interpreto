@@ -15,7 +15,7 @@ public class Chaine extends Variable {
 	 *            nom que prendra la Chaine de caractere
 	 */
 	public Chaine(String nomVariable) {
-		this(nomVariable, false, "");
+		super(nomVariable, false, "null");
 	}
 
 	/**

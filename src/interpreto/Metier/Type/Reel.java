@@ -15,7 +15,7 @@ public class Reel extends Variable {
 	 *            nom que prendra le Reel
 	 */
 	public Reel(String nomVariable) {
-		this(nomVariable, false, "");
+		super(nomVariable, false, "0.0");
 	}
 
 	/**
@@ -28,7 +28,6 @@ public class Reel extends Variable {
 	 */
 	public Reel(String nomVariable, boolean estConstant, String valeur) {
 		super(nomVariable, estConstant, valeur);
-		super.valeurDefaut = "0.0";
 	}
 
 	/**

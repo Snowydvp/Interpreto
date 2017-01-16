@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import bsh.EvalError;
 import bsh.Interpreter;
-import bsh.InterpreterError;
 import interpreto.IHM.IHM;
 import interpreto.Metier.Type.*;
 
@@ -61,7 +60,7 @@ public class AnalyseCode {
 		try {
 			scFichier = new Scanner(new File(nomFichier));
 			while (scFichier.hasNextLine())
-				motsCles.add(scFichier.nextLine());
+				motsCles.add(scFichier.nextLine().trim());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
@@ -129,19 +128,17 @@ public class AnalyseCode {
 	 *            permet de savoir le nombre de ligne deja interprete
 	 */
 	private void traiterCode(int ligneInterpretee) {
-
 		String ligne = code.get(ligneInterpretee);
-		Scanner scLigne = new Scanner(ligne);
+		if(ligne.trim().isEmpty() || ligne.trim().substring(0, 2).equals("//"))
+			return;
+		else if (ligne.contains("◄—"))
+			erreur = !affecterVariable(ligne);
+		
 
-		if (ligne.contains("◄—"))
-			erreur = affecterVariable(ligne);
-
-		else {
-			if (estFonction(ligne)) {
+		else if (estFonction(ligne)) {
 				Object o = traiterFonction(ligne);
 				if (o.getClass() == Boolean.class)
 					erreur = !(boolean) o;
-
 			} else
 				// Si l'expression ne constitue pas une fonction
 				try {
@@ -151,8 +148,7 @@ public class AnalyseCode {
 				erreur = true;
 				}
 
-		}
-		scLigne.close();
+		
 	}
 
 	/**
@@ -220,7 +216,6 @@ public class AnalyseCode {
 		String[] chaines = parametre.split("&"); // Gère la concaténation
 		for (String chaine : chaines) {
 			// Cas ou ce qui est à afficher contitue une fonction
-			System.out.println(chaine + " " + estFonction(chaine));
 			if (chaine.contains("(") && chaine.contains(")") && estFonction(chaine)) {
 				Object o = traiterFonction(chaine.substring(0, chaine.lastIndexOf(')') + 1));
 				if (o == null)
@@ -304,12 +299,14 @@ public class AnalyseCode {
 				if (v.modifierValeur(valeur)) {
 					if (v.getType().equals("booleen"))
 						valeur = Booleen.getBooleen(valeur);
+				}
 					try {
+						
 						interpreteur.eval(nomVariable + "=" + valeur);
 					} catch (EvalError e) {
 						e.printStackTrace();
 					}
-				}
+				
 				return true;
 			}
 
@@ -367,7 +364,6 @@ public class AnalyseCode {
 			return true;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | NullPointerException
 				| InvocationTargetException | SecurityException e) {
-			System.out.println(e);
 			return false;
 		}
 	}

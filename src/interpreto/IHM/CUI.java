@@ -231,4 +231,9 @@ public class CUI implements IHM {
 		this.lectureEntree = true;
 		return this.scEntree.nextLine();
 	}
+	
+	public static void main(String a[])
+	{
+		new CUI(a[0]);
+	}
 }
