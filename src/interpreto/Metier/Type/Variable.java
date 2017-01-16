@@ -21,13 +21,13 @@ public abstract class Variable {
 	protected int taille;
 
 	/**
-	 * Constructeur permettant la création d'une Variable
+	 * Constructeur permettant la crï¿½ation d'une Variable
 	 * 
 	 * @param nomVariable
 	 *            nom que prendra la Variable
 	 */
 	public Variable(String nom) {
-		this(nom, false);
+		this(nom, false, "");
 	}
 
 	/**
@@ -38,12 +38,13 @@ public abstract class Variable {
 	 * @param estConstant
 	 *            boolean permettant de savoir si la Variable est une constante
 	 */
-	public Variable(String nom, boolean estConstante) {
+	public Variable(String nom, boolean estConstante, String valeur) {
 		this.nom = nom;
 		this.estConstante = estConstante;
-
+		
 		this.estTableau = false;
 		this.valeurs = new ArrayList<String>();
+		valeurs.add(valeur);
 	}
 
 	// a travailler plus tard

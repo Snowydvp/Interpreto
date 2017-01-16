@@ -15,7 +15,7 @@ public class Booleen extends Variable {
 	 *            nom que prendra le booleen
 	 */
 	public Booleen(String nomVariable) {
-		this(nomVariable, false);
+		this(nomVariable, false, "");
 	}
 
 	/**
@@ -26,8 +26,8 @@ public class Booleen extends Variable {
 	 * @param estConstant
 	 *            boolean permettant de savoir si le Booleen est une constante
 	 */
-	public Booleen(String nomVariable, boolean estConstant) {
-		super(nomVariable, estConstant);
+	public Booleen(String nomVariable, boolean estConstant, String valeur) {
+		super(nomVariable, estConstant, valeur);
 		super.valeurDefaut = "faux";
 	}
 

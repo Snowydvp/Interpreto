@@ -1,7 +1,7 @@
 package interpreto.Metier.Type;
 
 /**
- * Classe permettant la création des variables de type Chaine
+ * Classe permettant la crï¿½ation des variables de type Chaine
  * 
  * @author Equipe 7
  * @version 14/01/17
@@ -9,13 +9,13 @@ package interpreto.Metier.Type;
 public class Chaine extends Variable {
 
 	/**
-	 * Constructeur permettant la création d'une Chaine de caractere
+	 * Constructeur permettant la crï¿½ation d'une Chaine de caractere
 	 * 
 	 * @param nomVariable
 	 *            nom que prendra la Chaine de caractere
 	 */
 	public Chaine(String nomVariable) {
-		this(nomVariable, false);
+		this(nomVariable, false, "");
 	}
 
 	/**
@@ -28,8 +28,8 @@ public class Chaine extends Variable {
 	 *            boolean permettant de savoir si la Chaine de caractere est une
 	 *            constante
 	 */
-	public Chaine(String nomVariable, boolean estConstant) {
-		super(nomVariable, estConstant);
+	public Chaine(String nomVariable, boolean estConstant, String valeur) {
+		super(nomVariable, estConstant, valeur);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 ALGORITHME NomAlgo
 constante:
-	MAXIMELINTOT ◄— "pp"
+	REMILAURET ◄— "ppMax"
 variable:
 	x, y	: entier
 	a:booleen
@@ -10,18 +10,10 @@ variable:
 	christophe:chaine	
 DEBUT
 
-	ecrire(enEntier(19.0))
-	ecrire(enChaine("1lol19test16"))
-	ecrire(car(64))
-	ecrire(ord('o'))
-	ecrire(hasard(5))	
-	ecrire(aujourd'hui())
-	ecrire(estEntier(19.0))
-	ecrire(estRéel(19))
-	ecrire(enRéel(19))
-	ecrire(plafond(19.1))
-	ecrire(plancher(19.3))
-	ecrire(arrondi(20.3)
+	x ◄— 10
+	y ◄— 5
+	c ◄— 3.3
+	ecrire(x+y+c)	
 	
 
 

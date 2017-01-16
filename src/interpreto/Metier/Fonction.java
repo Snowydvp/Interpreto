@@ -1,7 +1,6 @@
 package interpreto.Metier;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Classe permettant la gestion des fonctions
@@ -27,16 +26,18 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de convertir un reel en entier
+	 * Methode permettant de convertir une chaine de caractere en entier
 	 * 
 	 * @param param
 	 * @return null si la conversion a rater
 	 */
 	public static Integer enEntier(String param) {
+		param = param.replace("\"", "");
 		try {
-			Integer i = (int) (Double.parseDouble(param));
+			Integer i = (Integer.parseInt(param));
 			return i;
 		} catch (NumberFormatException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -48,8 +49,6 @@ public class Fonction {
 	 * @return le parametre
 	 */
 	public static String enChaine(String param) {
-		System.out.println(param);
-		param = param.replace("\"", "");
 		return param;
 	}
 
@@ -92,7 +91,12 @@ public class Fonction {
 	 * @return un Integer arrondi a l'entier inferieur
 	 */
 	public static Integer plancher(String param) {
-		return Fonction.enEntier(param);
+		try {
+			Integer i = (int) Double.parseDouble(param);
+			return i;
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -103,7 +107,7 @@ public class Fonction {
 	 */
 	public static Integer plafond(String param) {
 		if (!Fonction.estEntier(param))
-			return Fonction.enEntier(param) + 1;
+			return Fonction.plancher(param) + 1;
 		return Fonction.enEntier(param);
 	}
 
@@ -114,9 +118,14 @@ public class Fonction {
 	 * @return un Integer arrondi a l'entier inferieur ou superieur
 	 */
 	public static Integer arrondi(String param) {
-		if (Fonction.enReel(param) >= Fonction.enEntier(param) + 0.5)
-			return Fonction.plafond(param);
-		return Fonction.plancher(param);
+		try {
+			Double d = Fonction.enReel(param);
+			if (d >= Fonction.plancher(param) + 0.5)
+				return Fonction.plafond(param);
+			return Fonction.plancher(param);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -163,14 +172,15 @@ public class Fonction {
 	 * @return un boolean
 	 */
 	public static boolean estReel(String param) {
-		if (!estEntier(param))
-			try {
-				Double i = Double.parseDouble(param);
-				return true;
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		return false;
+		if (estEntier(param))
+			return false;
+
+		try {
+			Double d = Double.parseDouble(param);
+			return false;
+		} catch (NumberFormatException e) {
+			return true;
+		}
 	}
 
 	/**
@@ -182,7 +192,7 @@ public class Fonction {
 	 */
 	public static boolean estEntier(String param) {
 		try {
-			Integer i = new Integer(param);
+			new Integer(param);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;

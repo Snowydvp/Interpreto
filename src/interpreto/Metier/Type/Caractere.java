@@ -1,7 +1,7 @@
 package interpreto.Metier.Type;
 
 /**
- * Classe permettant la création des variables de type Caractere
+ * Classe permettant la crï¿½ation des variables de type Caractere
  * 
  * @author Equipe 7
  * @version 14/01/17
@@ -9,13 +9,13 @@ package interpreto.Metier.Type;
 public class Caractere extends Variable {
 
 	/**
-	 * Constructeur permettant la création d'un Caractere
+	 * Constructeur permettant la crï¿½ation d'un Caractere
 	 * 
 	 * @param nomVariable
 	 *            nom que prendra le Caractere
 	 */
 	public Caractere(String nomVariable) {
-		this(nomVariable, false);
+		this(nomVariable, false, "");
 	}
 
 	/**
@@ -26,8 +26,8 @@ public class Caractere extends Variable {
 	 * @param estConstant
 	 *            boolean permettant de savoir si le Caractere est une constante
 	 */
-	public Caractere(String nomVariable, boolean estConstant) {
-		super(nomVariable, estConstant);
+	public Caractere(String nomVariable, boolean estConstant, String valeur) {
+		super(nomVariable, estConstant, valeur);
 		super.valeurDefaut = "\0";
 	}
 

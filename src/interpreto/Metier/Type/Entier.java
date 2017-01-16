@@ -1,7 +1,7 @@
 package interpreto.Metier.Type;
 
 /**
- * Classe permettant la création des variables de type Entier
+ * Classe permettant la crï¿½ation des variables de type Entier
  * 
  * @author Equipe 7
  * @version 14/01/17
@@ -9,13 +9,13 @@ package interpreto.Metier.Type;
 public class Entier extends Variable {
 
 	/**
-	 * Constructeur permettant la création d'un Entier
+	 * Constructeur permettant la crï¿½ation d'un Entier
 	 * 
 	 * @param nomVariable
 	 *            nom que prendra l'Entier
 	 */
 	public Entier(String nomVariable) {
-		this(nomVariable, false);
+		this(nomVariable, false, "");
 	}
 
 	/**
@@ -26,8 +26,8 @@ public class Entier extends Variable {
 	 * @param estConstant
 	 *            boolean permettant de savoir si l'Entier est une constante
 	 */
-	public Entier(String nomVariable, boolean estConstant) {
-		super(nomVariable, estConstant);
+	public Entier(String nomVariable, boolean estConstant, String valeur) {
+		super(nomVariable, estConstant, valeur);
 		super.valeurDefaut = "0";
 	}
 

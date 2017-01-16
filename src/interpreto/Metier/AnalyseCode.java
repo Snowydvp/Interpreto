@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import bsh.EvalError;
 import bsh.Interpreter;
+import bsh.InterpreterError;
 import interpreto.IHM.IHM;
 import interpreto.Metier.Type.*;
 
@@ -18,7 +19,7 @@ import interpreto.Metier.Type.*;
  */
 public class AnalyseCode {
 
-	private ArrayList<String> code, fonctions, conditions, console;
+	public ArrayList<String> code, fonctions, conditions, console;
 	private ArrayList<Variable> variables;
 	private Interpreter interpreteur;
 	private IHM ihm;
@@ -80,10 +81,9 @@ public class AnalyseCode {
 	 */
 
 	private boolean estFonction(String expression) {
-		for (String fonction : fonctions) {
+		for (String fonction : fonctions)
 			if (expression.contains(fonction))
 				return true;
-		}
 		return false;
 	}
 
@@ -137,19 +137,20 @@ public class AnalyseCode {
 			erreur = affecterVariable(ligne);
 
 		else {
-			while (scLigne.hasNext()) {
-				String expression = scLigne.next();
+			if (estFonction(ligne)) {
+				Object o = traiterFonction(ligne);
+				if (o.getClass() == Boolean.class)
+					erreur = !(boolean) o;
 
-				if (estFonction(expression)) {
-					Object o = traiterFonction(ligne);
-					if (o.getClass() == Boolean.class)
-						erreur = !(boolean) o;
+			} else
+				// Si l'expression ne constitue pas une fonction
+				try {
+				interpreteur.eval(ligne);
+				} catch (EvalError e) {
+				// erreur = !expression.contains("FIN");
+				erreur = true;
+				}
 
-				} else
-					// Si l'expression ne constitue pas une fonction
-					erreur = !expression.contains("FIN");
-
-			}
 		}
 		scLigne.close();
 	}
@@ -173,6 +174,8 @@ public class AnalyseCode {
 			return ecrire(parametre);
 		case "enRéel":
 			return Fonction.enReel(parametre);
+		case "enChaine":
+			return Fonction.enChaine(parametre);
 		case "enEntier":
 			return Fonction.enEntier(parametre);
 		case "ord":
@@ -199,7 +202,6 @@ public class AnalyseCode {
 			return Fonction.hasard(parametre);
 		case "car":
 			return Fonction.car(parametre);
-
 		}
 
 		return false;
@@ -217,12 +219,16 @@ public class AnalyseCode {
 		String strSortie = "";
 		String[] chaines = parametre.split("&"); // Gère la concaténation
 		for (String chaine : chaines) {
-			System.out.println(estFonction(chaine)+ " "+chaine);
 			// Cas ou ce qui est à afficher contitue une fonction
+			System.out.println(chaine + " " + estFonction(chaine));
 			if (chaine.contains("(") && chaine.contains(")") && estFonction(chaine)) {
 				Object o = traiterFonction(chaine.substring(0, chaine.lastIndexOf(')') + 1));
+				if (o == null)
+					return false;
+				if (o.getClass() == Boolean.class)
+					strSortie += Booleen.getBooleen((String) (o + ""));
+				else
 					strSortie += (String) (o + "");
-					System.out.println(strSortie);
 			}
 
 			// Cas où ce qui est à afficher
@@ -232,12 +238,20 @@ public class AnalyseCode {
 				// On vérifie si deux guillements existent
 				strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
 
-			else// Cas où ce qui est à afficher est une variable
+			else if (rechercherVariable(chaine.trim()) != null)// Cas où ce qui
+																// est à
+																// afficher est
+																// une variable
 			{
 				Variable var = rechercherVariable(chaine.trim());
-				if (var == null)
-					return false;
 				strSortie += var.getValeurActuelle();
+			} else {
+				try {
+					interpreteur.eval("result=" + chaine);
+					strSortie += interpreteur.get("result");
+				} catch (EvalError e) {
+					return false;
+				}
 			}
 		}
 		console.add(strSortie);
@@ -348,11 +362,12 @@ public class AnalyseCode {
 			if (varExist.getNom().equals(nomVariable))
 				return false;
 		try {
-			variables.add((Variable) getType(valeur).getConstructors()[1].newInstance(nomVariable, true));
+			variables.add((Variable) getType(valeur).getConstructors()[1].newInstance(nomVariable, true, valeur));
 			interpreteur.equals(nomVariable);
 			return true;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | NullPointerException
 				| InvocationTargetException | SecurityException e) {
+			System.out.println(e);
 			return false;
 		}
 	}
