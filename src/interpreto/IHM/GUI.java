@@ -3,11 +3,13 @@ package interpreto.IHM;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import interpreto.Metier.AnalyseCode;
+import interpreto.Metier.LectureFichier;
 
 public class GUI extends JFrame implements IHM{
 	
@@ -62,11 +64,18 @@ public class GUI extends JFrame implements IHM{
        menu1_item1.addActionListener(new ActionListener(){
     	   public void actionPerformed(ActionEvent e){
     		   dialogue.showOpenDialog(null);
-    		   JOptionPane.showMessageDialog(null,"Voici le fichier que vous avez ouvert : " + dialogue.getSelectedFile(),"Fichier ouvert",JOptionPane.INFORMATION_MESSAGE);
-    		   analyseCode = new AnalyseCode(dialogue.getSelectedFile().getPath(), guiFrame);
-    		   analyseCode.traiterInitialisation();
-    		   //theNewModel.addElement("test");
-    		   //listCode.setModel(theNewModel);
+    		   LectureFichier lecture = LectureFichier.creerLectureFichier(dialogue.getSelectedFile().getPath());
+    		   if(lecture != null){
+    			   analyseCode = new AnalyseCode(lecture, guiFrame);
+    			   analyseCode.traiterInitialisation();
+    			   ArrayList<String> code = analyseCode.getCode();
+    			   for(String s : code)
+    				   theNewModel.addElement(s.replaceAll("\t", "    "));
+    			   listCode.setModel(theNewModel);
+    			   //JOptionPane.showMessageDialog(null,"Fichier chargé avec succès.","Succès",JOptionPane.INFORMATION_MESSAGE);
+    		   }else{
+    			   JOptionPane.showMessageDialog(null,"Erreur lors du chargement du fichier. Celui-ci doit être du au format .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
+    		   }
     	   }
        });
        menu1.add(menu1_item1);
@@ -75,6 +84,7 @@ public class GUI extends JFrame implements IHM{
        dfmData.addElement("Aucune données à afficher.");
        FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier .algo", "algo", "text");
        dialogue.setFileFilter(filter);
+       
        /*
         * Fin Initialisation
         */
