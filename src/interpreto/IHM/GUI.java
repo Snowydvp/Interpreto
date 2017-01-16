@@ -13,6 +13,7 @@ import interpreto.Metier.Type.Variable;
  * @author Equipe 7
  * @version 14/01/17
  */
+
 public class GUI extends JFrame implements IHM{
 	
 	JPanel panelMain = new JPanel();
@@ -32,11 +33,11 @@ public class GUI extends JFrame implements IHM{
     JButton buttonStartAuto = new JButton("Début Auto");
     JButton buttonStartManu = new JButton("Début Manuel");
     
-    private DefaultListModel dfmCode = new DefaultListModel();
-    private JList            listCode = new JList(dfmCode);
-    private DefaultListModel dfmData = new DefaultListModel();
-    private DefaultListModel theNewModel;
-    private JList            listData = new JList(dfmData);
+    private DefaultListModel<String> dfmCode = new DefaultListModel<String>();
+    private JList<String>            listCode = new JList<String>(dfmCode);
+    private DefaultListModel<String> dfmData = new DefaultListModel<String>();
+    private DefaultListModel<String> theNewModel;
+    private JList<String>            listData = new JList<String>(dfmData);
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu    menu1   = new JMenu("Fichier");
 	private JMenu    menu2   = new JMenu("Edition");
@@ -82,32 +83,11 @@ public class GUI extends JFrame implements IHM{
        menuBar.add(menu2);
        menuBar.add(menu3);
        menu1_item1.addActionListener(new ActionListener(){
-    	   
     	   public void actionPerformed(ActionEvent e){
     		   dialogue.showOpenDialog(null);
     		   LectureFichier lecture = LectureFichier.creerLectureFichier(dialogue.getSelectedFile().getPath());
     		   if(lecture != null){
-    			   analyseCode = new AnalyseCode(lecture, guiFrame);
-    			   analyseCode.traiterInitialisation();
-    			   ArrayList<String> code = analyseCode.getCode();
-    			   theNewModel = new DefaultListModel();
-    			   for(String s : code)
-    				   theNewModel.addElement(s.replaceAll("\t", "    "));
-    			   listCode.setModel(theNewModel);
-    			   if (!analyseCode.getErreur()) {
-	    			   demanderTraceVariable.setLayout(new GridLayout(analyseCode.getVariables().size(),1));
-	    			   for(Variable v : analyseCode.getVariables()){
-	    				   demanderTraceVariable.add(new JLabel(v.getNom()));
-	    				   
-	    			   }System.out.println(analyseCode.getVariables().size());
-	    			   
-	    			   demanderTraceVariable.add(new JButton("Fermer"));
-	    				   
-	    			   
-	    			   demanderTraceVariable.setVisible(true);
-    			   }else{
-    				   JOptionPane.showMessageDialog(null,"Erreur lors de l'initialisation. Vérifiez l'authenticité de votre fichier"+analyseCode.getLigneInterpretee()+" .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
-    			   }
+    			   update(lecture);
     		   }else{
     			   JOptionPane.showMessageDialog(null,"Erreur lors du chargement du fichier. Celui-ci doit être du au format .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
     		   }
@@ -157,7 +137,36 @@ public class GUI extends JFrame implements IHM{
        add(panelMain);
                 
        setVisible(true);
-    }    
+    }
+    
+    public void update(LectureFichier lecture){
+    	analyseCode = new AnalyseCode(lecture, guiFrame);
+		analyseCode.traiterInitialisation();
+    	ArrayList<String> code = analyseCode.getCode();
+    	theNewModel = new DefaultListModel<String>();
+    	for(String s : code)
+    		theNewModel.addElement(s.replaceAll("\t", "    "));
+    	listCode.setModel(theNewModel);
+    	if (!analyseCode.getErreur()) {
+    		demanderTraceVariable.setLayout(new BorderLayout());
+    		JPanel listVar = new JPanel(new GridLayout(analyseCode.getVariables().size(),1));
+    		for(Variable v : analyseCode.getVariables()){
+    			listVar.add(new JLabel(v.getNom()));
+    		}
+    		System.out.println(analyseCode.getVariables().size());
+    		JButton closeDialog = new JButton("Fermer");
+    		closeDialog.addActionListener(new ActionListener(){
+    			public void actionPerformed(ActionEvent e){
+    				demanderTraceVariable.setVisible(false);
+    			}
+		    });
+			demanderTraceVariable.add(listVar,BorderLayout.CENTER);
+			demanderTraceVariable.add(closeDialog,BorderLayout.SOUTH);   
+			demanderTraceVariable.setVisible(true);
+    	}else{
+    		JOptionPane.showMessageDialog(null,"Erreur lors de l'initialisation. Vérifiez l'authenticité de votre fichier"+analyseCode.getLigneInterpretee()+" .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
+    	}
+    }
     
     public static void main(String[] args) {
 		guiFrame = new GUI();
