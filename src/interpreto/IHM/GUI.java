@@ -108,7 +108,6 @@ public class GUI extends JFrame implements IHM{
     			   }else{
     				   JOptionPane.showMessageDialog(null,"Erreur lors de l'initialisation. Vérifiez l'authenticité de votre fichier"+analyseCode.getLigneInterpretee()+" .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
     			   }
-    			   //JOptionPane.showMessageDialog(null,"Fichier chargé avec succès.","Succès",JOptionPane.INFORMATION_MESSAGE);
     		   }else{
     			   JOptionPane.showMessageDialog(null,"Erreur lors du chargement du fichier. Celui-ci doit être du au format .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
     		   }
