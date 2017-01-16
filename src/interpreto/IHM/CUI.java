@@ -208,7 +208,6 @@ public class CUI implements IHM {
 		sortie += "\n";
 
 		for (int cptLig = 0; cptLig < analyseCode.getConsole().size(); cptLig++)
-			// Peut afficher jusqu'à 999 lignes.
 			sortie += '|' + analyseCode.getConsole().get(cptLig)
 					+ String.format("%" + (87 - analyseCode.getConsole().get(cptLig).length()) + "s", "|\n");
 		/*
