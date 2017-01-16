@@ -48,6 +48,8 @@ public class Fonction {
 	 * @return le parametre
 	 */
 	public static String enChaine(String param) {
+		System.out.println(param);
+		param = param.replace("\"", "");
 		return param;
 	}
 
@@ -58,9 +60,9 @@ public class Fonction {
 	 * @return un integer
 	 */
 	public static Integer ord(String param) {
-		if (param.length() == 1)
+		if (param.length() == 3)
 			try {
-				Integer i = (int) (param.charAt(0));
+				Integer i = (int) (param.charAt(1));
 				return i;
 			} catch (NumberFormatException e) {
 				return null;
@@ -123,11 +125,11 @@ public class Fonction {
 	 * @return un String contenant la date d'aujourd'hui
 	 */
 	public static String aujourdhui() {
-		return Fonction.jour() + "/" + Fonction.mois() + "/" + Fonction.annee();
+		return Fonction.annee() + "-" + Fonction.mois() + "-" + Fonction.jour();
 	}
 
 	/**
-	 * Methode permettant de connaitre le jour actuelle
+	 * Methode permettant de connaitre le jour actuel
 	 * 
 	 * @return un int contenant le jour
 	 */
@@ -136,7 +138,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de connaitre le mois actuelle
+	 * Methode permettant de connaitre le mois actuel
 	 * 
 	 * @return un int contenant le mois
 	 */
@@ -154,7 +156,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de savoir si le parametre est un reel
+	 * Methode permettant de savoir si le parametre est un réel
 	 * 
 	 * @param param
 	 *            valeur a identifier
@@ -172,7 +174,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de savoir si le parametre est un entier
+	 * Methode permettant de savoir si le paramètre est un entier
 	 * 
 	 * @param param
 	 *            valeur a identifier

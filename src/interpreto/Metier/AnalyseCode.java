@@ -80,9 +80,10 @@ public class AnalyseCode {
 	 */
 
 	private boolean estFonction(String expression) {
-		for (String fonction : fonctions)
+		for (String fonction : fonctions) {
 			if (expression.contains(fonction))
 				return true;
+		}
 		return false;
 	}
 
@@ -107,7 +108,6 @@ public class AnalyseCode {
 				}
 
 			} else if (ligne.contains("variable:")) {
-				System.out.println("detect variable");
 				ligne = code.get(++ligneInterpretee);
 				while (!ligne.contains("DEBUT") && !erreur) {
 					if (ligne.contains(":"))
@@ -142,9 +142,7 @@ public class AnalyseCode {
 
 				if (estFonction(expression)) {
 					Object o = traiterFonction(ligne);
-					System.out.println(o.getClass().getName());
 					if (o.getClass() == Boolean.class)
-
 						erreur = !(boolean) o;
 
 				} else
@@ -163,10 +161,11 @@ public class AnalyseCode {
 	 *            ligne actuelle en cours de traitement
 	 * @return un objet de type String, Double, Integer,...
 	 */
-	private Object traiterFonction(String ligne) {
-		ligne = ligne.trim();
-		String fonction = ligne.substring(0, ligne.indexOf('('));
-		String parametre = ligne.substring(ligne.indexOf('(') + 1, ligne.lastIndexOf(')'));
+	private Object traiterFonction(String declaration) {
+
+		declaration = declaration.trim();
+		String fonction = declaration.substring(0, declaration.indexOf('('));
+		String parametre = declaration.substring(declaration.indexOf('(') + 1, declaration.lastIndexOf(')'));
 		switch (fonction) {
 		case "lire":
 			return lire(parametre);
@@ -186,6 +185,20 @@ public class AnalyseCode {
 			return Fonction.arrondi(parametre);
 		case "aujourd'hui":
 			return Fonction.aujourdhui();
+		case "jour":
+			return Fonction.jour();
+		case "mois":
+			return Fonction.mois();
+		case "annee":
+			return Fonction.annee();
+		case "estRéel":
+			return Fonction.estReel(parametre);
+		case "estEntier":
+			return Fonction.estEntier(parametre);
+		case "hasard":
+			return Fonction.hasard(parametre);
+		case "car":
+			return Fonction.car(parametre);
 
 		}
 
@@ -204,13 +217,21 @@ public class AnalyseCode {
 		String strSortie = "";
 		String[] chaines = parametre.split("&"); // Gère la concaténation
 		for (String chaine : chaines) {
+			System.out.println(estFonction(chaine)+ " "+chaine);
+			// Cas ou ce qui est à afficher contitue une fonction
+			if (chaine.contains("(") && chaine.contains(")") && estFonction(chaine)) {
+				Object o = traiterFonction(chaine.substring(0, chaine.lastIndexOf(')') + 1));
+					strSortie += (String) (o + "");
+					System.out.println(strSortie);
+			}
+
 			// Cas où ce qui est à afficher
 			// constitue une chaine de
 			// caractères
-
-			if (chaine.lastIndexOf('"') != chaine.indexOf('"'))
+			else if (chaine.lastIndexOf('"') != chaine.indexOf('"'))
 				// On vérifie si deux guillements existent
 				strSortie += chaine.substring(chaine.indexOf('"') + 1, chaine.lastIndexOf('"'));
+
 			else// Cas où ce qui est à afficher est une variable
 			{
 				Variable var = rechercherVariable(chaine.trim());
