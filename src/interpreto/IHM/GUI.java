@@ -112,7 +112,6 @@ public class GUI extends JFrame implements IHM{
     		   }else{
     			   JOptionPane.showMessageDialog(null,"Erreur lors du chargement du fichier. Celui-ci doit être du au format .algo.","Erreur",JOptionPane.ERROR_MESSAGE);
     		   }
-    		   //JOptionPane.showMessageDialog(null,"Fonction non implémentée.","Erreur",JOptionPane.ERROR_MESSAGE);
     	   }
        });
        menu1.add(menu1_item1);
