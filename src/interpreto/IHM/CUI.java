@@ -33,6 +33,10 @@ public class CUI implements IHM {
 			this.affichVariablesTrace();
 			this.interpreter();
 		}
+		else
+		{
+		    System.out.println("Erreur d'accès au fichier algo.");
+		}
 
 	}
 
@@ -126,7 +130,7 @@ public class CUI implements IHM {
 		 * ---------------------------------------------------------
 		 */
 		sortie += "\n";
-		int tailleNbLignes = (code.size() / 10);
+		int tailleNbLignes = ((code.size() - 1) / 10);
 		for (int cptLig = 0; cptLig < code.size() && cptLig < 39; cptLig++) {
 			String ligne = code.get(cptLig);
 			// Remplacement des tabulations par des espaces pour un affichage
@@ -144,7 +148,7 @@ public class CUI implements IHM {
 			// Surligne la ligne actuellement interpretée
 			if (analyseCode.getLigneInterpretee() == cptLig)
 				sortie += erreur;
-			sortie += '|' + String.format("%" + tailleNbLignes + "d", cptLig) + ' ' + ligne
+			sortie += '|' + String.format("%" + (tailleNbLignes + 1 )+ "d", cptLig) + ' ' + ligne
 			// Detecter le nombre de couleur par ligne pour rajouter de la
 			// longueur
 					+ String.format("%" + (84 - ligne.length() + (nbCouleur * 6)) + "s", "|");

@@ -38,14 +38,8 @@ public class Caractere extends Variable {
 	 * @return true si la valeur a bien etait modifier
 	 */
 	public boolean modifierValeur(String val) {
-		if (val.length() != 3 || val.charAt(0) != '\'' && val.charAt(2) != '\'')// On
-																				// compte
-																				// aussi
-																				// les
-																				// simples
-																				// quote
+		if (val.length() != 3 || val.charAt(0) != '\'' && val.charAt(2) != '\'')
 			return false;
-		super.valeurs.add(val);
 		return super.modifierValeur(val);
 	}
 

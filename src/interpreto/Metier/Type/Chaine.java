@@ -42,7 +42,6 @@ public class Chaine extends Variable {
 	public boolean modifierValeur(String val) {
 		if (val.charAt(0) != '"' || val.charAt(val.length() - 1) != '"')
 			return false;
-		super.valeurs.add(val);
 		return super.modifierValeur(val);
 	}
 }

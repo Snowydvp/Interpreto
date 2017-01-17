@@ -13,7 +13,7 @@ public abstract class Variable {
 
 	protected String nom;
 	protected ArrayList<String> valeurs;
-	protected boolean estTableau, estConstante;
+	protected boolean estConstante;
 	static String valeurDefaut;
 	/**
 	 * Cette variable est utilise uniquement lorsque la variable est un tableau
@@ -43,24 +43,8 @@ public abstract class Variable {
 		this.nom = nom;
 		this.estConstante = estConstante;
 		
-		this.estTableau = false;
 		this.valeurs = new ArrayList<String>();
 		valeurs.add(valeur);
-	}
-
-	// a travailler plus tard
-	/**
-	 * Constructeur permettant d'initialiser un tableau de Variable
-	 * 
-	 * @param nomVariable
-	 *            nom que prendra le tableau de Variable
-	 * @param taille
-	 *            entier permettant de connaitre la dimension du tableau
-	 */
-	public Variable(String nomVariable, int taille) {
-		this(nomVariable);
-		this.estTableau = true;
-		this.taille = taille;
 	}
 
 	/**
@@ -94,14 +78,6 @@ public abstract class Variable {
 		return this.valeurDefaut;
 	}
 
-	/**
-	 * Methode permettant de savoir si la variable est un tableau
-	 * 
-	 * @return le boolean estTableau
-	 */
-	public boolean isEstTableau() {
-		return this.estTableau;
-	}
 
 	/**
 	 * Methode permettant de savoir si la variable est une constante
@@ -126,10 +102,13 @@ public abstract class Variable {
 	 * 
 	 * @param val
 	 *            valeur de changement de la Variable
-	 * @return un boolean pour savoir si on peut modifier la Variable
+	 * @return un boolean pour savoir si on peut modifier la variable
 	 */
 	public boolean modifierValeur(String val) {
-		return !this.estConstante;
+	    if(!estConstante)
+		return valeurs.add(val);
+	    return false;
+		
 	}
 
 	/**

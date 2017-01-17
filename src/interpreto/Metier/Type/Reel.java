@@ -41,11 +41,11 @@ public class Reel extends Variable {
 		try {
 			Double.parseDouble(val);
 			// mettre la virgule si le nombre est entier
-			super.valeurs.add(val);
+			return super.modifierValeur(val);
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		return super.modifierValeur(val);
+		
 	}
 
 }

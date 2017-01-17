@@ -41,11 +41,11 @@ public class Entier extends Variable {
 	public boolean modifierValeur(String val) {
 		try {
 			Integer.parseInt(val);
-			super.valeurs.add(val);
+			return super.modifierValeur(val);
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		return super.modifierValeur(val);
+		
 
 	}
 

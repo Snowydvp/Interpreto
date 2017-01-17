@@ -1,6 +1,6 @@
 ALGORITHME NomAlgo
 constante:
-	REMILAURET ◄— "ppMax"
+	REMILAURET <- "ppMax"
 variable:
 	x, y	: entier
 	a:booleen
@@ -10,11 +10,9 @@ variable:
 	christophe:chaine	
 DEBUT
 
-	//x ◄— 5 
-	x ◄— 10
-	y ◄— 5.1
-	ecrire(y)	
-	car(6)
+ecrire(estEntier("3"))
+ecrire ( car(1))
+ecrire ( car(ord('@')) )
 	
 
 
