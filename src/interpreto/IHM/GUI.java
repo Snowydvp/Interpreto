@@ -173,7 +173,7 @@ public class GUI extends JFrame implements IHM{
 	}
 
 	/**
-	 * Cette methode sert à lire les variables via l'interface d'entrée
+	 * Methode permettant de lire les variables via l'interface d'entrée
 	 * 
 	 * @return le texte inséré dans la console
 	 */

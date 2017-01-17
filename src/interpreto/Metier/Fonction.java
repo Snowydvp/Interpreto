@@ -11,7 +11,7 @@ import java.util.Calendar;
 public class Fonction {
 
 	/**
-	 * Methode permettant de convertir un entier en reel
+	 * Méthode permettant de convertir un entier en reel
 	 * 
 	 * @param param
 	 * @return null si la conversion a rater
@@ -26,7 +26,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de convertir une chaine de caractere en entier
+	 * Méthode permettant de convertir une chaine de caractère en entier
 	 * 
 	 * @param param
 	 * @return null si la conversion a rater
@@ -43,20 +43,20 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de retouner une chaine
+	 * Méthode permettant de retouner une chaine
 	 * 
 	 * @param param
-	 * @return le parametre
+	 * @return le paramètre
 	 */
 	public static String enChaine(String param) {
 		return param;
 	}
 
 	/**
-	 * Methode permettant de convertir un char en int
+	 * Méthode permettant de convertir un char en int
 	 * 
 	 * @param param
-	 * @return un integer
+	 * @return résultat de conversion
 	 */
 	public static Integer ord(String param) {
 		if (param.length() == 3)
@@ -70,10 +70,10 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant la conversion d'un int en char
+	 * Méthode permettant la conversion d'un entier en caractère
 	 * 
 	 * @param param
-	 * @return un Character
+	 * @return un caractère
 	 */
 	public static Character car(String param) {
 		try {
@@ -85,10 +85,10 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant d'arrondir a l'entier inferieur
+	 * Méthode permettant d'arrondir a l'entier inférieur
 	 * 
 	 * @param param
-	 * @return un Integer arrondi a l'entier inferieur
+	 * @return un Integer arrondi a l'entier inférieur
 	 */
 	public static Integer plancher(String param) {
 		try {
@@ -100,10 +100,10 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant d'arrondir a l'entier superieur
+	 * Méthode permettant d'arrondir a l'entier supérieur
 	 * 
 	 * @param param
-	 * @return un Integer arrondi a l'entier superieur
+	 * @return un Integer arrondi a l'entier supérieur
 	 */
 	public static Integer plafond(String param) {
 		if (!Fonction.estEntier(param))
@@ -112,10 +112,10 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de faire l'arrondi
+	 * Méthode permettant de faire l'arrondi
 	 * 
 	 * @param param
-	 * @return un Integer arrondi a l'entier inferieur ou superieur
+	 * @return un Integer arrondi a l'entier inférieur ou supérieur
 	 */
 	public static Integer arrondi(String param) {
 		try {
@@ -129,7 +129,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de connaitre la date d'aujourd'hui
+	 * Méthode permettant de connaitre la date d'aujourd'hui
 	 * 
 	 * @return un String contenant la date d'aujourd'hui
 	 */
@@ -138,7 +138,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de connaitre le jour actuel
+	 * Méthode permettant de connaitre le jour actuel
 	 * 
 	 * @return un int contenant le jour
 	 */
@@ -147,7 +147,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de connaitre le mois actuel
+	 * Méthode permettant de connaitre le mois actuel
 	 * 
 	 * @return un int contenant le mois
 	 */
@@ -156,7 +156,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de connaitre l'annee actuelle
+	 * Méthode permettant de connaitre l'année actuelle
 	 * 
 	 * @return un int contenant l'année
 	 */
@@ -165,7 +165,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de savoir si le parametre est un réel
+	 * Méthode permettant de savoir si le paramètre est un réel
 	 * 
 	 * @param param
 	 *            valeur a identifier
@@ -184,7 +184,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de savoir si le paramètre est un entier
+	 * Méthode permettant de savoir si le paramètre est un entier
 	 * 
 	 * @param param
 	 *            valeur a identifier
@@ -200,7 +200,7 @@ public class Fonction {
 	}
 
 	/**
-	 * Methode permettant de retourner un nombre au hasard
+	 * Méthode permettant de retourner un nombre au hasard
 	 * 
 	 * @param param
 	 *            intervalle de hasard

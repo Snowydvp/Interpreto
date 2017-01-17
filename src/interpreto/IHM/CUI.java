@@ -22,7 +22,7 @@ public class CUI implements IHM {
 	 * Constructeur permettant l'analyse du fichier ainsi que son affichage
 	 * 
 	 * @param nomFichier
-	 *            chemin d'accée a la lecture du fichier
+	 *            chemin d'accès à la lecture du fichier
 	 */
 	public CUI(String nomFichier) {
 		this.scEntree = new Scanner(System.in);
@@ -41,7 +41,7 @@ public class CUI implements IHM {
 	}
 
 	/**
-	 * Methode permettant d'interpreter le code et de savoir si celui si est
+	 * Methode permettant d'interpreter le code et de savoir si celui-ci est
 	 * fini
 	 */
 	public void interpreter() {
