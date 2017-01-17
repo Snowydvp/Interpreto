@@ -1,10 +1,29 @@
-﻿ALGORTIHME NomAlgo
+﻿ALGORITHME LesConversions
 variable:
-   x       : entier 
+   e             : entier 
+   r             : réel
+   c             : caractère
+   ch            : chaine de caractères
 DEBUT
-   x    ◄— 5		
+   c    <- 'a'
+   e    <- ord ( c )
    
-   ecrire ( x )
+   e    <- e - 32
+   c    <- car ( e )
    
-FIN  
- 
+   ecrire ( e )
+   
+   c <- car ( ord ( 'b' ) - 32 )
+   
+   ecrire ( c )
+   
+   e <- enEntier ( "12"    )
+   r <- enReel   ( "12.32" )
+   
+   ch <- enChaine ( 12.5 )
+   
+   ecrire ( e  )
+   ecrire ( r  )
+   ecrire ( ch )
+   
+FIN	
